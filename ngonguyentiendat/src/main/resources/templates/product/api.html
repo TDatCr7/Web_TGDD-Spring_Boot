@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Product API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --yellow: #ffd400;
+            --black: #1f1f1f;
+            --gray: #f5f6f8;
+            --border: #e5e7eb;
+            --danger: #dc3545;
+            --success: #198754;
+            --warning: #ffb100;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #111827;
+            font-family: Arial, sans-serif;
+        }
+
+        .api-shell {
+            max-width: 1380px;
+            margin: 24px auto;
+            padding: 0 16px 40px;
+        }
+
+        .api-title {
+            background: linear-gradient(135deg, #111827, #2d2d2d);
+            color: #fff;
+            border-radius: 18px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
+        }
+
+        .api-title h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .api-title p {
+            margin: 0;
+            color: #e5e7eb;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 18px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--yellow);
+            color: #111;
+            padding: 16px 18px;
+            font-weight: 700;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        textarea.form-control {
+            height: 96px;
+            padding: 10px 12px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--yellow);
+            color: #111;
+        }
+
+        .btn-dark {
+            background: var(--black);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #111;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8fff1;
+            color: #0f7a42;
+            border: 1px solid #b7f0cc;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff1f2;
+            color: #b42318;
+            border: 1px solid #fecdd3;
+        }
+
+        .table-wrap {
+            overflow: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+        }
+
+        thead {
+            background: #111827;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #fffdf1;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-actions button {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .preview {
+            margin-top: 16px;
+            background: #0f172a;
+            color: #e5e7eb;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            min-height: 120px;
+            overflow: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #f3f4f6;
+        }
+
+        @media (max-width: 1100px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<div class="api-shell">
+    <div class="api-title">
+        <h1>Product API Tester</h1>
+        <p>Trang test API sản phẩm: thêm / sửa / xóa / xem danh sách</p>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-header">Form sản phẩm</div>
+            <div class="card-body">
+                <div id="messageBox" class="message"></div>
+
+                <input type="hidden" id="productId">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Tên sản phẩm</label>
+                        <input id="name" class="form-control" type="text" placeholder="Nhập tên sản phẩm">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slug">Slug</label>
+                        <input id="slug" class="form-control" type="text" placeholder="Để trống sẽ tự sinh">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Giá bán</label>
+                        <input id="price" class="form-control" type="number" step="0.01" placeholder="VD: 19990000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="originalPrice">Giá gốc</label>
+                        <input id="originalPrice" class="form-control" type="number" step="0.01" placeholder="VD: 24990000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryId">Danh mục</label>
+                        <select id="categoryId" class="form-control">
+                            <option value="">-- Chọn danh mục --</option>
+                            <option th:each="c : ${productCategories}"
+                                    th:value="${c.id}"
+                                    th:text="${c.name}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="promotionType">Loại khuyến mãi</label>
+                        <select id="promotionType" class="form-control">
+                            <option value="NONE">NONE</option>
+                            <option value="DISCOUNT">DISCOUNT</option>
+                            <option value="FLASHSALE">FLASHSALE</option>
+                            <option value="ONLINE_ONLY">ONLINE_ONLY</option>
+                            <option value="GIFT">GIFT</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="promotionStock">Số lượng khuyến mãi</label>
+                        <input id="promotionStock" class="form-control" type="number" placeholder="Để trống nếu NONE">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stockStatus">Trạng thái kho</label>
+                        <select id="stockStatus" class="form-control">
+                            <option value="CON_HANG">CON_HANG</option>
+                            <option value="SAP_HET_HANG">SAP_HET_HANG</option>
+                            <option value="SAP_VE_HANG">SAP_VE_HANG</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating">Đánh giá</label>
+                        <input id="rating" class="form-control" type="number" step="0.1" value="4.9">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="thumbnailUrl">Ảnh</label>
+                        <input id="thumbnailUrl" class="form-control" type="text" placeholder="/images/product/default-product.png">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" class="form-control" placeholder="Nhập mô tả sản phẩm"></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" id="saveBtn">Lưu sản phẩm</button>
+                    <button class="btn btn-dark" id="resetBtn" type="button">Làm mới form</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Danh sách sản phẩm API</div>
+            <div class="card-body">
+                <div class="toolbar">
+                    <div><strong>Endpoint:</strong> <span class="badge">/api/products</span></div>
+                    <button class="btn btn-warning" id="reloadBtn" type="button">Tải lại dữ liệu</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Giá</th>
+                            <th>Danh mục</th>
+                            <th>KM</th>
+                            <th>Kho</th>
+                            <th>Rating</th>
+                            <th>Slug</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                        <tr>
+                            <td colspan="9">Đang tải dữ liệu...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="preview" id="apiPreview">Chưa có phản hồi API.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/products';
+
+    const els = {
+        productId: document.getElementById('productId'),
+        name: document.getElementById('name'),
+        slug: document.getElementById('slug'),
+        price: document.getElementById('price'),
+        originalPrice: document.getElementById('originalPrice'),
+        categoryId: document.getElementById('categoryId'),
+        promotionType: document.getElementById('promotionType'),
+        promotionStock: document.getElementById('promotionStock'),
+        stockStatus: document.getElementById('stockStatus'),
+        rating: document.getElementById('rating'),
+        thumbnailUrl: document.getElementById('thumbnailUrl'),
+        description: document.getElementById('description'),
+        tableBody: document.getElementById('productTableBody'),
+        apiPreview: document.getElementById('apiPreview'),
+        messageBox: document.getElementById('messageBox'),
+        saveBtn: document.getElementById('saveBtn'),
+        resetBtn: document.getElementById('resetBtn'),
+        reloadBtn: document.getElementById('reloadBtn')
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        els.saveBtn.addEventListener('click', saveProduct);
+        els.resetBtn.addEventListener('click', resetForm);
+        els.reloadBtn.addEventListener('click', loadProducts);
+        loadProducts();
+    });
+
+    async function loadProducts() {
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            setPreview(data);
+            renderTable(data);
+        } catch (err) {
+            showMessage('Không tải được danh sách sản phẩm.', 'error');
+        }
+    }
+
+    function renderTable(products) {
+        if (!Array.isArray(products) || products.length === 0) {
+            els.tableBody.innerHTML = '<tr><td colspan="9">Chưa có sản phẩm.</td></tr>';
+            return;
+        }
+
+        els.tableBody.innerHTML = products.map(p => `
+            <tr>
+                <td>${p.id ?? ''}</td>
+                <td>${escapeHtml(p.name ?? '')}</td>
+                <td>${formatMoney(p.price)}</td>
+                <td>${escapeHtml(p.categoryName ?? '')}</td>
+                <td>${escapeHtml(p.promotionType ?? 'NONE')}</td>
+                <td>${escapeHtml(p.stockStatus ?? '')}</td>
+                <td>${p.rating ?? ''}</td>
+                <td>${escapeHtml(p.slug ?? '')}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn-success" onclick="editProduct(${p.id})">Sửa</button>
+                        <button class="btn-danger" onclick="deleteProduct(${p.id})">Xóa</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function saveProduct() {
+        clearMessage();
+
+        const payload = {
+            name: els.name.value.trim(),
+            slug: els.slug.value.trim(),
+            price: numberOrNull(els.price.value),
+            originalPrice: numberOrNull(els.originalPrice.value),
+            categoryId: intOrNull(els.categoryId.value),
+            promotionType: els.promotionType.value,
+            promotionStock: intOrNull(els.promotionStock.value),
+            stockStatus: els.stockStatus.value,
+            rating: numberOrNull(els.rating.value),
+            thumbnailUrl: els.thumbnailUrl.value.trim(),
+            description: els.description.value.trim()
+        };
+
+        const id = els.productId.value.trim();
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/${id}` : API_URL;
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            setPreview(data);
+
+            if (!res.ok) {
+                showMessage(buildErrorMessage(data), 'error');
+                return;
+            }
+
+            showMessage(id ? 'Cập nhật sản phẩm thành công.' : 'Thêm sản phẩm thành công.', 'success');
+            resetForm(false);
+            await loadProducts();
+        } catch (err) {
+            showMessage('Không gọi được API lưu sản phẩm.', 'error');
+        }
+    }
+
+    async function editProduct(id) {
+        clearMessage();
+        try {
+            const res = await fetch(`${API_URL}/${id}`);
+            const data = await res.json();
+            setPreview(data);
+
+            if (!res.ok) {
+                showMessage(data.message || 'Không lấy được chi tiết sản phẩm.', 'error');
+                return;
+            }
+
+            fillForm(data);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage(`Đã nạp dữ liệu sản phẩm #${id} lên form.`, 'success');
+        } catch (err) {
+            showMessage('Không gọi được API chi tiết sản phẩm.', 'error');
+        }
+    }
+
+    async function deleteProduct(id) {
+        clearMessage();
+        if (!confirm(`Bạn có chắc muốn xóa sản phẩm #${id}?`)) return;
+
+        try {
+            const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            setPreview(data);
+
+            if (!res.ok) {
+                showMessage(data.message || 'Xóa thất bại.', 'error');
+                return;
+            }
+
+            showMessage('Xóa sản phẩm thành công.', 'success');
+            if (String(els.productId.value) === String(id)) {
+                resetForm(false);
+            }
+            await loadProducts();
+        } catch (err) {
+            showMessage('Không gọi được API xóa sản phẩm.', 'error');
+        }
+    }
+
+    function fillForm(p) {
+        els.productId.value = p.id ?? '';
+        els.name.value = p.name ?? '';
+        els.slug.value = p.slug ?? '';
+        els.price.value = p.price ?? '';
+        els.originalPrice.value = p.originalPrice ?? '';
+        els.categoryId.value = p.categoryId ?? '';
+        els.promotionType.value = p.promotionType ?? 'NONE';
+        els.promotionStock.value = p.promotionStock ?? '';
+        els.stockStatus.value = p.stockStatus ?? 'CON_HANG';
+        els.rating.value = p.rating ?? '4.9';
+        els.thumbnailUrl.value = p.thumbnailUrl ?? '';
+        els.description.value = p.description ?? '';
+    }
+
+    function resetForm(showMsg = true) {
+        els.productId.value = '';
+        els.name.value = '';
+        els.slug.value = '';
+        els.price.value = '';
+        els.originalPrice.value = '';
+        els.categoryId.value = '';
+        els.promotionType.value = 'NONE';
+        els.promotionStock.value = '';
+        els.stockStatus.value = 'CON_HANG';
+        els.rating.value = '4.9';
+        els.thumbnailUrl.value = '';
+        els.description.value = '';
+        if (showMsg) showMessage('Đã làm mới form.', 'success');
+    }
+
+    function setPreview(data) {
+        els.apiPreview.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function showMessage(message, type) {
+        els.messageBox.className = `message ${type}`;
+        els.messageBox.textContent = message;
+    }
+
+    function clearMessage() {
+        els.messageBox.className = 'message';
+        els.messageBox.textContent = '';
+    }
+
+    function buildErrorMessage(data) {
+        if (!data) return 'Có lỗi xảy ra.';
+        if (data.errors) {
+            return Object.values(data.errors).join(' | ');
+        }
+        return data.message || 'Có lỗi xảy ra.';
+    }
+
+    function numberOrNull(value) {
+        if (value === null || value === undefined || value === '') return null;
+        return Number(value);
+    }
+
+    function intOrNull(value) {
+        if (value === null || value === undefined || value === '') return null;
+        return parseInt(value, 10);
+    }
+
+    function formatMoney(value) {
+        if (value === null || value === undefined || value === '') return '';
+        return new Intl.NumberFormat('vi-VN').format(value);
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+</script>
+</body>
+</html>

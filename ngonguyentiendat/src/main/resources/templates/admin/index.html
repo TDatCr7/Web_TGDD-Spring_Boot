@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Thế Giới Di Động</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    body{
+        margin:0;
+        font-family:Arial,sans-serif;
+        background:#e5e5e5;
+        color:#222;
+    }
+
+    .admin-page{
+        width:1200px;
+        max-width:96%;
+        margin:22px auto 30px;
+    }
+
+    .admin-hero{
+        background:linear-gradient(135deg,#111 0%, #222 100%);
+        color:#fff;
+        border-radius:18px;
+        padding:28px;
+        margin-bottom:20px;
+        box-shadow:0 4px 16px rgba(0,0,0,.12);
+    }
+
+    .admin-hero h1{
+        margin:0 0 8px;
+        font-size:34px;
+        font-weight:900;
+    }
+
+    .admin-hero p{
+        margin:0;
+        font-size:15px;
+        color:#f5f5f5;
+        opacity:.92;
+    }
+
+    .admin-grid{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:18px;
+        margin-bottom:22px;
+    }
+
+    .admin-card{
+        background:#fff;
+        border-radius:18px;
+        padding:22px;
+        box-shadow:0 3px 12px rgba(0,0,0,.08);
+        border:1px solid #ececec;
+    }
+
+    .admin-card-title{
+        font-size:24px;
+        font-weight:900;
+        color:#111;
+        margin-bottom:8px;
+    }
+
+    .admin-card-desc{
+        font-size:14px;
+        color:#555;
+        margin-bottom:18px;
+        line-height:1.5;
+        min-height:66px;
+    }
+
+    .admin-actions{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+    }
+
+    .admin-btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:130px;
+        height:42px;
+        border-radius:999px;
+        font-size:14px;
+        font-weight:800;
+        text-decoration:none;
+    }
+
+    .admin-btn-yellow{
+        background:#ffd400;
+        color:#111;
+    }
+
+    .admin-btn-dark{
+        background:#111;
+        color:#fff;
+    }
+
+    .admin-shortcuts{
+        background:#fff7d6;
+        border:1px solid #f3d66b;
+        border-radius:18px;
+        padding:18px 22px;
+    }
+
+    .admin-shortcuts h3{
+        margin:0 0 14px;
+        font-size:20px;
+        font-weight:900;
+        color:#111;
+    }
+
+    .shortcut-list{
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+    }
+
+    .shortcut-item{
+        background:#fff;
+        border-radius:999px;
+        padding:10px 16px;
+        font-size:14px;
+        font-weight:700;
+        color:#333;
+        border:1px solid #ececec;
+        text-decoration:none;
+    }
+
+    @media (max-width: 992px){
+        .admin-grid{
+            grid-template-columns:1fr;
+        }
+    }
+
+    @media (max-width: 768px){
+        .admin-hero h1{
+            font-size:28px;
+        }
+    }
+</style>
+
+<div class="admin-page">
+    <section class="admin-hero">
+        <h1>Trang quản trị Thế Giới Di Động</h1>
+        <p>Quản lý nhanh danh mục, sản phẩm và đơn hàng với giao diện đồng bộ theo phong cách TGDD.</p>
+    </section>
+
+    <section class="admin-grid">
+        <div class="admin-card">
+            <div class="admin-card-title">Quản lý danh mục</div>
+            <div class="admin-card-desc">
+                Thêm, sửa, xóa danh mục sản phẩm như Điện thoại, Laptop, Phụ kiện...
+            </div>
+            <div class="admin-actions">
+                <a class="admin-btn admin-btn-yellow" th:href="@{/categories}">Xem danh sách</a>
+                <a class="admin-btn admin-btn-dark" th:href="@{/categories/add}">Thêm danh mục</a>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="admin-card-title">Quản lý sản phẩm</div>
+            <div class="admin-card-desc">
+                Thêm, sửa, xóa sản phẩm, cập nhật giá, hình ảnh, mô tả và danh mục.
+            </div>
+            <div class="admin-actions">
+                <a class="admin-btn admin-btn-yellow" th:href="@{/products}">Xem danh sách</a>
+                <a class="admin-btn admin-btn-dark" th:href="@{/products/add}">Thêm sản phẩm</a>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="admin-card-title">Quản lý đơn hàng</div>
+            <div class="admin-card-desc">
+                Theo dõi đơn COD, MoMo, trạng thái thanh toán và chi tiết từng đơn.
+            </div>
+            <div class="admin-actions">
+                <a class="admin-btn admin-btn-yellow" th:href="@{/admin/orders}">Xem đơn hàng</a>
+            </div>
+        </div>
+        <div class="admin-card">
+            <div class="admin-card-title">API Testing Center</div>
+            <div class="admin-card-desc">
+                Test Product API, Category API, User API trên 1 trang tab duy nhất, có form CRUD và xem JSON phản hồi.
+            </div>
+            <div class="admin-actions">
+                <a class="admin-btn admin-btn-yellow" th:href="@{/api/tester}">Mở trang test API</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="admin-shortcuts">
+        <h3>Truy cập nhanh</h3>
+        <div class="shortcut-list">
+            <a class="shortcut-item" th:href="@{/}">🏠 Về trang chủ</a>
+            <a class="shortcut-item" th:href="@{/cart}">🛒 Giỏ hàng</a>
+            <a class="shortcut-item" th:href="@{/checkout}">💳 Checkout</a>
+            <a class="shortcut-item" th:href="@{/admin/orders}">📦 Đơn hàng</a>
+        </div>
+    </section>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+</body>
+</html>

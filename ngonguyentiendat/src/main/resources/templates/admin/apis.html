@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>API Testing Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --yellow: #ffd400;
+            --yellow-dark: #ffbe00;
+            --black: #111827;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --success: #198754;
+            --danger: #dc3545;
+            --info: #0d6efd;
+            --text: #111827;
+            --muted: #6b7280;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        .page {
+            max-width: 1440px;
+            margin: 24px auto 40px;
+            padding: 0 16px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #111827, #202938);
+            color: white;
+            border-radius: 22px;
+            padding: 26px;
+            margin-bottom: 18px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .hero p {
+            margin: 0;
+            color: #e5e7eb;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .top-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 16px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,.18);
+            color: white;
+            background: rgba(255,255,255,.08);
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .tab-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            color: #111;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn.active {
+            background: var(--yellow);
+            border-color: var(--yellow-dark);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        .card-header {
+            background: var(--yellow);
+            color: #111;
+            padding: 16px 18px;
+            font-size: 18px;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            padding: 0 12px;
+            font-size: 14px;
+            background: white;
+        }
+
+        textarea.form-control {
+            height: 96px;
+            padding: 10px 12px;
+            resize: vertical;
+        }
+
+        .actions, .toolbar, .checkbox-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .actions {
+            margin-top: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--yellow); color: #111; }
+        .btn-dark { background: var(--black); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-info { background: var(--info); color: white; }
+
+        .toolbar {
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8fff1;
+            color: #0f7a42;
+            border: 1px solid #b7f0cc;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff1f2;
+            color: #b42318;
+            border: 1px solid #fecdd3;
+        }
+
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 980px;
+        }
+
+        thead {
+            background: #111827;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #fffdf1;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .table-actions button {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .preview {
+            margin-top: 16px;
+            background: #0f172a;
+            color: #e5e7eb;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            min-height: 130px;
+            overflow: auto;
+        }
+
+        .role-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1100px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<div class="page">
+    <section class="hero">
+        <h1>API Testing Center</h1>
+        <p>Quản lý và test Product API, Category API, User API </p>
+        <div class="top-actions">
+            <a class="top-link" th:href="@{/admin}">← Về trang admin</a>
+            <a class="top-link" th:href="@{/products}">Quản lý sản phẩm</a>
+            <a class="top-link" th:href="@{/categories}">Quản lý danh mục</a>
+        </div>
+    </section>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="products">Product API</button>
+        <button class="tab-btn" data-tab="categories">Category API</button>
+        <button class="tab-btn" data-tab="users">User API</button>
+    </div>
+
+    <!-- PRODUCTS -->
+    <section class="tab-panel active" id="tab-products">
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">Form sản phẩm</div>
+                <div class="card-body">
+                    <div id="productMessage" class="message"></div>
+                    <input type="hidden" id="productId">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="productName">Tên sản phẩm</label>
+                            <input id="productName" class="form-control" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productSlug">Slug</label>
+                            <input id="productSlug" class="form-control" type="text" placeholder="Để trống sẽ tự sinh">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productPrice">Giá bán</label>
+                            <input id="productPrice" class="form-control" type="number" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productOriginalPrice">Giá gốc</label>
+                            <input id="productOriginalPrice" class="form-control" type="number" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productCategoryId">Danh mục</label>
+                            <select id="productCategoryId" class="form-control">
+                                <option value="">-- Chọn danh mục --</option>
+                                <option th:each="c : ${productCategories}" th:value="${c.id}" th:text="${c.name}"></option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productPromotionType">Loại khuyến mãi</label>
+                            <select id="productPromotionType" class="form-control">
+                                <option value="NONE">NONE</option>
+                                <option value="DISCOUNT">DISCOUNT</option>
+                                <option value="FLASHSALE">FLASHSALE</option>
+                                <option value="ONLINE_ONLY">ONLINE_ONLY</option>
+                                <option value="GIFT">GIFT</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productPromotionStock">Số lượng khuyến mãi</label>
+                            <input id="productPromotionStock" class="form-control" type="number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productStockStatus">Trạng thái kho</label>
+                            <select id="productStockStatus" class="form-control">
+                                <option value="CON_HANG">CON_HANG</option>
+                                <option value="SAP_HET_HANG">SAP_HET_HANG</option>
+                                <option value="SAP_VE_HANG">SAP_VE_HANG</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productRating">Đánh giá</label>
+                            <input id="productRating" class="form-control" type="number" step="0.1" value="4.9">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productThumbnailUrl">Ảnh</label>
+                            <input id="productThumbnailUrl" class="form-control" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="productDescription">Mô tả</label>
+                            <textarea id="productDescription" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" id="saveProductBtn" type="button">Lưu sản phẩm</button>
+                        <button class="btn btn-dark" id="resetProductBtn" type="button">Làm mới</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Danh sách Product API</div>
+                <div class="card-body">
+                    <div class="toolbar">
+                        <div><strong>Endpoint:</strong> <span class="badge">/api/products</span></div>
+                        <button class="btn btn-info" id="reloadProductBtn" type="button">Tải lại</button>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên</th>
+                                <th>Giá</th>
+                                <th>Danh mục</th>
+                                <th>KM</th>
+                                <th>Kho</th>
+                                <th>Rating</th>
+                                <th>Slug</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody id="productTableBody">
+                            <tr><td colspan="9">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="preview" id="productPreview">Chưa có phản hồi API.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="tab-panel" id="tab-categories">
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">Form danh mục</div>
+                <div class="card-body">
+                    <div id="categoryMessage" class="message"></div>
+                    <input type="hidden" id="categoryId">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="categoryName">Tên danh mục</label>
+                            <input id="categoryName" class="form-control" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categorySlug">Slug</label>
+                            <input id="categorySlug" class="form-control" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryMenuGroup">Nhóm menu</label>
+                            <select id="categoryMenuGroup" class="form-control">
+                                <option value="">-- Không chọn --</option>
+                                <option th:each="g : ${menuGroupOptions.entrySet()}"
+                                        th:value="${g.key}"
+                                        th:text="${g.value}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryImageUrl">Ảnh</label>
+                            <input id="categoryImageUrl" class="form-control" type="text">
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" id="saveCategoryBtn" type="button">Lưu danh mục</button>
+                        <button class="btn btn-dark" id="resetCategoryBtn" type="button">Làm mới</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Danh sách Category API</div>
+                <div class="card-body">
+                    <div class="toolbar">
+                        <div><strong>Endpoint:</strong> <span class="badge">/api/categories</span></div>
+                        <button class="btn btn-info" id="reloadCategoryBtn" type="button">Tải lại</button>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên</th>
+                                <th>Slug</th>
+                                <th>Nhóm menu</th>
+                                <th>Ảnh</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody id="categoryTableBody">
+                            <tr><td colspan="6">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="preview" id="categoryPreview">Chưa có phản hồi API.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- USERS -->
+    <section class="tab-panel" id="tab-users">
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">Form user</div>
+                <div class="card-body">
+                    <div id="userMessage" class="message"></div>
+                    <input type="hidden" id="userId">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="userFullName">Họ tên</label>
+                            <input id="userFullName" class="form-control" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userEmail">Email</label>
+                            <input id="userEmail" class="form-control" type="email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userPhoneNumber">Số điện thoại</label>
+                            <input id="userPhoneNumber" class="form-control" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userPassword">Mật khẩu</label>
+                            <input id="userPassword" class="form-control" type="password" placeholder="Sửa thì để trống để giữ nguyên">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userLoyaltyPoints">Điểm tích lũy</label>
+                            <input id="userLoyaltyPoints" class="form-control" type="number" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userEnabled">Trạng thái</label>
+                            <select id="userEnabled" class="form-control">
+                                <option value="true">Đang hoạt động</option>
+                                <option value="false">Bị khóa</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vai trò</label>
+                            <div class="checkbox-row">
+                                <label class="role-box"><input type="checkbox" name="userRole" value="ROLE_USER" checked> ROLE_USER</label>
+                                <label class="role-box"><input type="checkbox" name="userRole" value="ROLE_MANAGER"> ROLE_MANAGER</label>
+                                <label class="role-box"><input type="checkbox" name="userRole" value="ROLE_ADMIN"> ROLE_ADMIN</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" id="saveUserBtn" type="button">Lưu user</button>
+                        <button class="btn btn-dark" id="resetUserBtn" type="button">Làm mới</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Danh sách User API</div>
+                <div class="card-body">
+                    <div class="toolbar">
+                        <div><strong>Endpoint:</strong> <span class="badge">/api/users</span></div>
+                        <button class="btn btn-info" id="reloadUserBtn" type="button">Tải lại</button>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Điểm</th>
+                                <th>Trạng thái</th>
+                                <th>Roles</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                            <tr><td colspan="8">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="preview" id="userPreview">Chưa có phản hồi API.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const PRODUCT_API = '/api/products';
+    const CATEGORY_API = '/api/categories';
+    const USER_API = '/api/users';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initTabs();
+        bindProductEvents();
+        bindCategoryEvents();
+        bindUserEvents();
+
+        loadProducts();
+        loadCategories();
+        loadUsers();
+
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab) activateTab(tab);
+    });
+
+    function initTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+        });
+    }
+
+    function activateTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+            panel.classList.toggle('active', panel.id === `tab-${tabName}`);
+        });
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', tabName);
+        history.replaceState({}, '', url);
+    }
+
+    function bindProductEvents() {
+        document.getElementById('saveProductBtn').addEventListener('click', saveProduct);
+        document.getElementById('resetProductBtn').addEventListener('click', () => resetProductForm(true));
+        document.getElementById('reloadProductBtn').addEventListener('click', loadProducts);
+    }
+
+    function bindCategoryEvents() {
+        document.getElementById('saveCategoryBtn').addEventListener('click', saveCategory);
+        document.getElementById('resetCategoryBtn').addEventListener('click', () => resetCategoryForm(true));
+        document.getElementById('reloadCategoryBtn').addEventListener('click', loadCategories);
+    }
+
+    function bindUserEvents() {
+        document.getElementById('saveUserBtn').addEventListener('click', saveUser);
+        document.getElementById('resetUserBtn').addEventListener('click', () => resetUserForm(true));
+        document.getElementById('reloadUserBtn').addEventListener('click', loadUsers);
+    }
+
+    async function loadProducts() {
+        try {
+            const res = await fetch(PRODUCT_API);
+            const data = await res.json();
+            setPreview('productPreview', data);
+            renderProducts(data);
+        } catch (e) {
+            showMessage('productMessage', 'Không tải được danh sách sản phẩm.', 'error');
+        }
+    }
+
+    function renderProducts(items) {
+        const body = document.getElementById('productTableBody');
+        if (!Array.isArray(items) || items.length === 0) {
+            body.innerHTML = '<tr><td colspan="9">Chưa có sản phẩm.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = items.map(p => `
+            <tr>
+                <td>${p.id ?? ''}</td>
+                <td>${escapeHtml(p.name ?? '')}</td>
+                <td>${formatMoney(p.price)}</td>
+                <td>${escapeHtml(p.categoryName ?? '')}</td>
+                <td>${escapeHtml(p.promotionType ?? '')}</td>
+                <td>${escapeHtml(p.stockStatus ?? '')}</td>
+                <td>${p.rating ?? ''}</td>
+                <td>${escapeHtml(p.slug ?? '')}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn-success" onclick="editProduct(${p.id})">Sửa</button>
+                        <button class="btn-danger" onclick="deleteProduct(${p.id})">Xóa</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function saveProduct() {
+        clearMessage('productMessage');
+
+        const payload = {
+            name: valueOf('productName'),
+            slug: valueOf('productSlug'),
+            price: numberOrNull(valueOf('productPrice')),
+            originalPrice: numberOrNull(valueOf('productOriginalPrice')),
+            categoryId: intOrNull(valueOf('productCategoryId')),
+            promotionType: valueOf('productPromotionType'),
+            promotionStock: intOrNull(valueOf('productPromotionStock')),
+            stockStatus: valueOf('productStockStatus'),
+            rating: numberOrNull(valueOf('productRating')),
+            thumbnailUrl: valueOf('productThumbnailUrl'),
+            description: valueOf('productDescription')
+        };
+
+        const id = valueOf('productId');
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${PRODUCT_API}/${id}` : PRODUCT_API;
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            setPreview('productPreview', data);
+
+            if (!res.ok) {
+                showMessage('productMessage', buildErrorMessage(data), 'error');
+                return;
+            }
+
+            showMessage('productMessage', id ? 'Cập nhật sản phẩm thành công.' : 'Thêm sản phẩm thành công.', 'success');
+            resetProductForm(false);
+            loadProducts();
+        } catch (e) {
+            showMessage('productMessage', 'Không gọi được API lưu sản phẩm.', 'error');
+        }
+    }
+
+    async function editProduct(id) {
+        activateTab('products');
+        clearMessage('productMessage');
+
+        try {
+            const res = await fetch(`${PRODUCT_API}/${id}`);
+            const data = await res.json();
+            setPreview('productPreview', data);
+
+            if (!res.ok) {
+                showMessage('productMessage', data.message || 'Không lấy được chi tiết sản phẩm.', 'error');
+                return;
+            }
+
+            setValue('productId', data.id);
+            setValue('productName', data.name);
+            setValue('productSlug', data.slug);
+            setValue('productPrice', data.price);
+            setValue('productOriginalPrice', data.originalPrice);
+            setValue('productCategoryId', data.categoryId);
+            setValue('productPromotionType', data.promotionType || 'NONE');
+            setValue('productPromotionStock', data.promotionStock);
+            setValue('productStockStatus', data.stockStatus || 'CON_HANG');
+            setValue('productRating', data.rating ?? '4.9');
+            setValue('productThumbnailUrl', data.thumbnailUrl);
+            setValue('productDescription', data.description);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage('productMessage', `Đã nạp sản phẩm #${id} lên form.`, 'success');
+        } catch (e) {
+            showMessage('productMessage', 'Không gọi được API chi tiết sản phẩm.', 'error');
+        }
+    }
+
+    async function deleteProduct(id) {
+        if (!confirm(`Bạn có chắc muốn xóa sản phẩm #${id}?`)) return;
+
+        try {
+            const res = await fetch(`${PRODUCT_API}/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            setPreview('productPreview', data);
+
+            if (!res.ok) {
+                showMessage('productMessage', data.message || 'Xóa thất bại.', 'error');
+                return;
+            }
+
+            showMessage('productMessage', 'Xóa sản phẩm thành công.', 'success');
+            if (String(valueOf('productId')) === String(id)) resetProductForm(false);
+            loadProducts();
+        } catch (e) {
+            showMessage('productMessage', 'Không gọi được API xóa sản phẩm.', 'error');
+        }
+    }
+
+    function resetProductForm(showMsg) {
+        setValue('productId', '');
+        setValue('productName', '');
+        setValue('productSlug', '');
+        setValue('productPrice', '');
+        setValue('productOriginalPrice', '');
+        setValue('productCategoryId', '');
+        setValue('productPromotionType', 'NONE');
+        setValue('productPromotionStock', '');
+        setValue('productStockStatus', 'CON_HANG');
+        setValue('productRating', '4.9');
+        setValue('productThumbnailUrl', '');
+        setValue('productDescription', '');
+        if (showMsg) showMessage('productMessage', 'Đã làm mới form sản phẩm.', 'success');
+    }
+
+    async function loadCategories() {
+        try {
+            const res = await fetch(CATEGORY_API);
+            const data = await res.json();
+            setPreview('categoryPreview', data);
+            renderCategories(data);
+        } catch (e) {
+            showMessage('categoryMessage', 'Không tải được danh mục.', 'error');
+        }
+    }
+
+    function renderCategories(items) {
+        const body = document.getElementById('categoryTableBody');
+        if (!Array.isArray(items) || items.length === 0) {
+            body.innerHTML = '<tr><td colspan="6">Chưa có danh mục.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = items.map(c => `
+            <tr>
+                <td>${c.id ?? ''}</td>
+                <td>${escapeHtml(c.name ?? '')}</td>
+                <td>${escapeHtml(c.slug ?? '')}</td>
+                <td>${escapeHtml(c.menuGroup ?? '')}</td>
+                <td>${escapeHtml(c.imageUrl ?? '')}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn-success" onclick="editCategory(${c.id})">Sửa</button>
+                        <button class="btn-danger" onclick="deleteCategory(${c.id})">Xóa</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function saveCategory() {
+        clearMessage('categoryMessage');
+
+        const payload = {
+            name: valueOf('categoryName'),
+            slug: valueOf('categorySlug'),
+            menuGroup: valueOf('categoryMenuGroup'),
+            imageUrl: valueOf('categoryImageUrl')
+        };
+
+        const id = valueOf('categoryId');
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${CATEGORY_API}/${id}` : CATEGORY_API;
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            setPreview('categoryPreview', data);
+
+            if (!res.ok) {
+                showMessage('categoryMessage', buildErrorMessage(data), 'error');
+                return;
+            }
+
+            showMessage('categoryMessage', id ? 'Cập nhật danh mục thành công.' : 'Thêm danh mục thành công.', 'success');
+            resetCategoryForm(false);
+            loadCategories();
+        } catch (e) {
+            showMessage('categoryMessage', 'Không gọi được API lưu danh mục.', 'error');
+        }
+    }
+
+    async function editCategory(id) {
+        activateTab('categories');
+        clearMessage('categoryMessage');
+
+        try {
+            const res = await fetch(`${CATEGORY_API}/${id}`);
+            const data = await res.json();
+            setPreview('categoryPreview', data);
+
+            if (!res.ok) {
+                showMessage('categoryMessage', data.message || 'Không lấy được chi tiết danh mục.', 'error');
+                return;
+            }
+
+            setValue('categoryId', data.id);
+            setValue('categoryName', data.name);
+            setValue('categorySlug', data.slug);
+            setValue('categoryMenuGroup', data.menuGroup || '');
+            setValue('categoryImageUrl', data.imageUrl || '');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage('categoryMessage', `Đã nạp danh mục #${id} lên form.`, 'success');
+        } catch (e) {
+            showMessage('categoryMessage', 'Không gọi được API chi tiết danh mục.', 'error');
+        }
+    }
+
+    async function deleteCategory(id) {
+        if (!confirm(`Bạn có chắc muốn xóa danh mục #${id}?`)) return;
+
+        try {
+            const res = await fetch(`${CATEGORY_API}/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            setPreview('categoryPreview', data);
+
+            if (!res.ok) {
+                showMessage('categoryMessage', data.message || 'Xóa danh mục thất bại.', 'error');
+                return;
+            }
+
+            showMessage('categoryMessage', 'Xóa danh mục thành công.', 'success');
+            if (String(valueOf('categoryId')) === String(id)) resetCategoryForm(false);
+            loadCategories();
+        } catch (e) {
+            showMessage('categoryMessage', 'Không gọi được API xóa danh mục.', 'error');
+        }
+    }
+
+    function resetCategoryForm(showMsg) {
+        setValue('categoryId', '');
+        setValue('categoryName', '');
+        setValue('categorySlug', '');
+        setValue('categoryMenuGroup', '');
+        setValue('categoryImageUrl', '');
+        if (showMsg) showMessage('categoryMessage', 'Đã làm mới form danh mục.', 'success');
+    }
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(USER_API);
+            const data = await res.json();
+            setPreview('userPreview', data);
+            renderUsers(data);
+        } catch (e) {
+            showMessage('userMessage', 'Không tải được danh sách user.', 'error');
+        }
+    }
+
+    function renderUsers(items) {
+        const body = document.getElementById('userTableBody');
+        if (!Array.isArray(items) || items.length === 0) {
+            body.innerHTML = '<tr><td colspan="8">Chưa có user.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = items.map(u => `
+            <tr>
+                <td>${u.id ?? ''}</td>
+                <td>${escapeHtml(u.fullName ?? '')}</td>
+                <td>${escapeHtml(u.email ?? '')}</td>
+                <td>${escapeHtml(u.phoneNumber ?? '')}</td>
+                <td>${u.loyaltyPoints ?? 0}</td>
+                <td>${u.enabled ? 'Hoạt động' : 'Bị khóa'}</td>
+                <td>${escapeHtml((u.roles || []).join(', '))}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn-success" onclick="editUser(${u.id})">Sửa</button>
+                        <button class="btn-danger" onclick="deleteUser(${u.id})">Xóa</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function saveUser() {
+        clearMessage('userMessage');
+
+        const payload = {
+            fullName: valueOf('userFullName'),
+            email: valueOf('userEmail'),
+            phoneNumber: valueOf('userPhoneNumber'),
+            password: document.getElementById('userPassword').value,
+            loyaltyPoints: intOrNull(valueOf('userLoyaltyPoints')),
+            enabled: valueOf('userEnabled') === 'true',
+            roles: getCheckedRoles()
+        };
+
+        const id = valueOf('userId');
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${USER_API}/${id}` : USER_API;
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            setPreview('userPreview', data);
+
+            if (!res.ok) {
+                showMessage('userMessage', buildErrorMessage(data), 'error');
+                return;
+            }
+
+            showMessage('userMessage', id ? 'Cập nhật user thành công.' : 'Thêm user thành công.', 'success');
+            resetUserForm(false);
+            loadUsers();
+        } catch (e) {
+            showMessage('userMessage', 'Không gọi được API lưu user.', 'error');
+        }
+    }
+
+    async function editUser(id) {
+        activateTab('users');
+        clearMessage('userMessage');
+
+        try {
+            const res = await fetch(`${USER_API}/${id}`);
+            const data = await res.json();
+            setPreview('userPreview', data);
+
+            if (!res.ok) {
+                showMessage('userMessage', data.message || 'Không lấy được chi tiết user.', 'error');
+                return;
+            }
+
+            setValue('userId', data.id);
+            setValue('userFullName', data.fullName);
+            setValue('userEmail', data.email);
+            setValue('userPhoneNumber', data.phoneNumber || '');
+            document.getElementById('userPassword').value = '';
+            setValue('userLoyaltyPoints', data.loyaltyPoints ?? 0);
+            setValue('userEnabled', String(data.enabled));
+            setCheckedRoles(data.roles || ['ROLE_USER']);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage('userMessage', `Đã nạp user #${id} lên form.`, 'success');
+        } catch (e) {
+            showMessage('userMessage', 'Không gọi được API chi tiết user.', 'error');
+        }
+    }
+
+    async function deleteUser(id) {
+        if (!confirm(`Bạn có chắc muốn xóa user #${id}?`)) return;
+
+        try {
+            const res = await fetch(`${USER_API}/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            setPreview('userPreview', data);
+
+            if (!res.ok) {
+                showMessage('userMessage', data.message || 'Xóa user thất bại.', 'error');
+                return;
+            }
+
+            showMessage('userMessage', 'Xóa user thành công.', 'success');
+            if (String(valueOf('userId')) === String(id)) resetUserForm(false);
+            loadUsers();
+        } catch (e) {
+            showMessage('userMessage', 'Không gọi được API xóa user.', 'error');
+        }
+    }
+
+    function resetUserForm(showMsg) {
+        setValue('userId', '');
+        setValue('userFullName', '');
+        setValue('userEmail', '');
+        setValue('userPhoneNumber', '');
+        document.getElementById('userPassword').value = '';
+        setValue('userLoyaltyPoints', '0');
+        setValue('userEnabled', 'true');
+        setCheckedRoles(['ROLE_USER']);
+        if (showMsg) showMessage('userMessage', 'Đã làm mới form user.', 'success');
+    }
+
+    function getCheckedRoles() {
+        return Array.from(document.querySelectorAll('input[name="userRole"]:checked'))
+            .map(item => item.value);
+    }
+
+    function setCheckedRoles(roles) {
+        const safeRoles = new Set(roles || []);
+        document.querySelectorAll('input[name="userRole"]').forEach(item => {
+            item.checked = safeRoles.has(item.value);
+        });
+    }
+
+    function setPreview(id, data) {
+        document.getElementById(id).textContent = JSON.stringify(data, null, 2);
+    }
+
+    function showMessage(id, message, type) {
+        const box = document.getElementById(id);
+        box.className = `message ${type}`;
+        box.textContent = message;
+    }
+
+    function clearMessage(id) {
+        const box = document.getElementById(id);
+        box.className = 'message';
+        box.textContent = '';
+    }
+
+    function buildErrorMessage(data) {
+        if (!data) return 'Có lỗi xảy ra.';
+        if (data.errors) return Object.values(data.errors).join(' | ');
+        return data.message || 'Có lỗi xảy ra.';
+    }
+
+    function valueOf(id) {
+        return document.getElementById(id).value.trim();
+    }
+
+    function setValue(id, value) {
+        document.getElementById(id).value = value ?? '';
+    }
+
+    function intOrNull(value) {
+        return value === '' ? null : parseInt(value, 10);
+    }
+
+    function numberOrNull(value) {
+        return value === '' ? null : Number(value);
+    }
+
+    function formatMoney(value) {
+        if (value === null || value === undefined || value === '') return '';
+        return new Intl.NumberFormat('vi-VN').format(value);
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+</script>
+</body>
+</html>

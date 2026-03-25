@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa sản phẩm</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/site-header :: siteHeader(${categories})}"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#e5e5e5;color:#222}
+    .admin-shell{width:860px;max-width:95%;margin:24px auto 32px}
+    .admin-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .admin-title{background:#f4e04d;padding:18px 24px;font-size:26px;font-weight:800;text-transform:uppercase;text-align:center}
+    .admin-body{padding:28px}
+    .field{margin-bottom:16px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    label{display:block;margin-bottom:8px;font-size:15px;font-weight:700}
+    input, textarea, select{
+        width:100%;
+        border:1px solid #d8d8d8;
+        border-radius:6px;
+        padding:10px 12px;
+        font-size:15px;
+        background:#fff;
+    }
+    input, select{height:42px}
+    textarea{min-height:120px;resize:vertical}
+    .preview{margin-top:10px}
+    .preview img{
+        width:84px;height:120px;object-fit:cover;border:1px solid #ddd;border-radius:8px;background:#fff;display:block;
+    }
+    .error-text{display:block;color:#d70018;font-size:13px;margin-top:6px}
+    .message-error{margin-bottom:14px;padding:12px;border-radius:8px;background:#f8d7da;color:#721c24;font-weight:700}
+    .hint{font-size:13px;color:#666;margin-top:6px}
+    .radio-group{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+    .radio-item{display:flex;align-items:center;gap:8px}
+    .radio-item input{width:auto;height:auto;margin:0}
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{
+        display:inline-flex;align-items:center;justify-content:center;
+        min-width:160px;height:44px;border-radius:8px;text-decoration:none;font-weight:800;border:none;cursor:pointer
+    }
+    .btn-cancel{background:#f1f1f1;color:#333}
+    .btn-save{background:#d70018;color:#fff}
+</style>
+
+<div class="admin-shell">
+    <div class="admin-card">
+        <div class="admin-title">Sửa sản phẩm</div>
+
+        <div class="admin-body">
+            <div th:if="${errorMessage}" class="message-error" th:text="${errorMessage}"></div>
+
+            <form id="productEditForm" th:action="@{/products/edit/{id}(id=${product.id})}" th:object="${productForm}" method="post">
+                <input type="hidden" th:field="*{uploadedImagePath}" id="uploadedImagePath">
+
+                <div class="field">
+                    <label>Tên sản phẩm:</label>
+                    <input type="text" th:field="*{name}">
+                    <small class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+                </div>
+
+                <div class="field">
+                    <label>Slug:</label>
+                    <input type="text" th:field="*{slug}">
+                    <small class="error-text" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></small>
+                </div>
+
+                <div class="two-col">
+                    <div class="field">
+                        <label>Giá gốc (VNĐ):</label>
+                        <input type="number" th:field="*{originalPrice}" id="originalPriceInput">
+                        <small class="error-text" th:if="${#fields.hasErrors('originalPrice')}" th:errors="*{originalPrice}"></small>
+                    </div>
+
+                    <div class="field">
+                        <label>Giá bán hiện tại (VNĐ):</label>
+                        <input type="number" th:field="*{price}" id="salePriceInput">
+                        <small class="error-text" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></small>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>% giảm tự tính:</label>
+                    <input type="text" id="discountPreview" readonly>
+                </div>
+
+                <div class="field">
+                    <label>Danh mục:</label>
+                    <select th:field="*{categoryId}">
+                        <option value="">-- Chọn danh mục --</option>
+                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                    </select>
+                    <small class="error-text" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></small>
+                </div>
+
+                <div class="field">
+                    <label>Ảnh hiện tại:</label>
+                    <div class="preview">
+                        <img id="productImagePreview"
+                             th:src="${productForm.currentThumbnailUrl != null ? productForm.currentThumbnailUrl : ''}"
+                             alt="Preview ảnh sản phẩm">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Chọn ảnh mới:</label>
+                    <input type="file" accept="image/*" id="productImageInput">
+                    <div class="hint">Nếu không chọn ảnh mới thì giữ ảnh cũ.</div>
+                </div>
+
+                <div class="field">
+                    <label>Tham gia campaign online:</label>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" th:field="*{promotionType}" value="NONE"> Không tham gia khuyến mãi online</label>
+                        <label class="radio-item"><input type="radio" th:field="*{promotionType}" value="DISCOUNT"> Giảm giá / Khuyến mãi</label>
+                        <label class="radio-item"><input type="radio" th:field="*{promotionType}" value="FLASHSALE"> Flash Sale</label>
+                        <label class="radio-item"><input type="radio" th:field="*{promotionType}" value="ONLINE_ONLY"> Online Only</label>
+                        <label class="radio-item"><input type="radio" th:field="*{promotionType}" value="GIFT"> Quà tặng</label>
+                    </div>
+                </div>
+
+                <div class="field" id="promotionStockField">
+                    <label>Số lượng suất khuyến mãi online:</label>
+                    <input type="number" th:field="*{promotionStock}" min="1">
+                    <div class="hint">Chỉ dùng cho box Khuyến mãi online.</div>
+                    <small class="error-text" th:if="${#fields.hasErrors('promotionStock')}" th:errors="*{promotionStock}"></small>
+                </div>
+
+                <div class="field">
+                    <label>Tình trạng sản phẩm:</label>
+                    <select th:field="*{stockStatus}">
+                        <option value="">-- Chọn tình trạng --</option>
+                        <option value="CON_HANG">Còn hàng</option>
+                        <option value="SAP_HET_HANG">Sắp hết hàng</option>
+                        <option value="SAP_VE_HANG">Sắp về hàng</option>
+                    </select>
+                    <small class="error-text" th:if="${#fields.hasErrors('stockStatus')}" th:errors="*{stockStatus}"></small>
+                </div>
+
+                <div class="field">
+                    <label>Đánh giá sao:</label>
+                    <input type="number" step="0.1" min="0" max="5" th:field="*{rating}">
+                </div>
+
+                <div class="field">
+                    <label>Mô tả chi tiết:</label>
+                    <textarea th:field="*{description}"></textarea>
+                </div>
+
+                <div class="actions">
+                    <a class="btn btn-cancel" th:href="@{/products}">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-save" id="saveBtn">Cập nhật sản phẩm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: siteFooter}"></div>
+
+<script>
+    const productEditForm = document.getElementById('productEditForm');
+    const productImageInput = document.getElementById('productImageInput');
+    const productImagePreview = document.getElementById('productImagePreview');
+    const uploadedImagePath = document.getElementById('uploadedImagePath');
+    const saveBtn = document.getElementById('saveBtn');
+
+    const originalPriceInput = document.getElementById('originalPriceInput');
+    const salePriceInput = document.getElementById('salePriceInput');
+    const discountPreview = document.getElementById('discountPreview');
+
+    const promotionInputs = document.querySelectorAll('input[name="promotionType"]');
+    const promotionStockField = document.getElementById('promotionStockField');
+    const promotionStockInput = document.querySelector('input[name="promotionStock"]');
+
+    let isSubmittingAfterUpload = false;
+
+    function getPromotionType() {
+        return document.querySelector('input[name="promotionType"]:checked')?.value || 'NONE';
+    }
+
+    function updateDiscountPreview() {
+        const original = parseFloat(originalPriceInput?.value || 0);
+        const sale = parseFloat(salePriceInput?.value || 0);
+
+        if (!original || !sale || sale >= original) {
+            discountPreview.value = '0%';
+            return;
+        }
+
+        const percent = Math.round(((original - sale) / original) * 100);
+        discountPreview.value = percent + '%';
+    }
+
+    function togglePromotionFields() {
+        const promotionType = getPromotionType();
+
+        if (promotionType === 'NONE') {
+            promotionStockField.style.display = 'none';
+            if (promotionStockInput) {
+                promotionStockInput.disabled = true;
+                promotionStockInput.value = '';
+            }
+        } else {
+            promotionStockField.style.display = 'block';
+            if (promotionStockInput) {
+                promotionStockInput.disabled = false;
+            }
+        }
+    }
+
+    function previewImage(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            productImagePreview.src = e.target.result;
+            productImagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function uploadImageAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = async function (e) {
+                try {
+                    const response = await fetch('/products/upload-base64', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            imageBase64: e.target.result
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        reject(data.message || 'Tải ảnh thất bại.');
+                        return;
+                    }
+
+                    resolve(data.imagePath);
+                } catch (error) {
+                    reject('Không thể tải ảnh lên server.');
+                }
+            };
+
+            reader.onerror = function () {
+                reject('Không thể đọc file ảnh.');
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (productImageInput && productImagePreview) {
+        productImageInput.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file) return;
+            previewImage(file);
+        });
+    }
+
+    if (productEditForm) {
+        productEditForm.addEventListener('submit', async function (e) {
+            if (isSubmittingAfterUpload) return;
+
+            const file = productImageInput?.files?.[0];
+            if (!file) return;
+
+            e.preventDefault();
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Đang tải ảnh...';
+
+            try {
+                const imagePath = await uploadImageAsBase64(file);
+                uploadedImagePath.value = imagePath;
+
+                isSubmittingAfterUpload = true;
+                saveBtn.textContent = 'Đang cập nhật sản phẩm...';
+                productEditForm.submit();
+            } catch (error) {
+                alert(error);
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Cập nhật sản phẩm';
+            }
+        });
+    }
+
+    if (originalPriceInput) originalPriceInput.addEventListener('input', updateDiscountPreview);
+    if (salePriceInput) salePriceInput.addEventListener('input', updateDiscountPreview);
+    promotionInputs.forEach(input => input.addEventListener('change', togglePromotionFields));
+
+    updateDiscountPreview();
+    togglePromotionFields();
+</script>
+
+</body>
+</html>

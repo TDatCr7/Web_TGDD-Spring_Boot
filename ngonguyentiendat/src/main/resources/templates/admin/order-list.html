@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách đơn hàng</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/admin-header :: adminHeader('Quản lý đơn hàng')}"></div>
+
+<style>
+    body{
+        margin:0;
+        font-family:Arial,sans-serif;
+        background:#efefef;
+        color:#222;
+    }
+    .admin-content{
+        width:1200px;
+        max-width:95%;
+        margin:24px auto 30px;
+        background:#fff;
+        border-radius:18px;
+        padding:24px;
+        box-shadow:0 3px 12px rgba(0,0,0,.06);
+    }
+    .top-actions{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        margin-bottom:16px;
+        flex-wrap:wrap;
+    }
+    .top-actions a{
+        background:#111;
+        color:#fff;
+        padding:10px 16px;
+        border-radius:10px;
+        text-decoration:none;
+        font-weight:700;
+    }
+    .table-wrap{
+        overflow:auto;
+    }
+    table{
+        width:100%;
+        border-collapse:collapse;
+        min-width:1100px;
+    }
+    th,td{
+        padding:12px;
+        border-bottom:1px solid #ddd;
+        text-align:left;
+        vertical-align:middle;
+    }
+    th{
+        background:#ffd500;
+    }
+    .status{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:30px;
+        padding:0 10px;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:800;
+    }
+    .status-success{background:#e9f7ef;color:#1e7e34}
+    .status-pending{background:#fff8e8;color:#b26b00}
+    .status-failed{background:#fff1f0;color:#d93025}
+    .view-link{
+        color:#2f80ed;
+        font-weight:800;
+        text-decoration:none;
+    }
+</style>
+
+<div class="admin-content">
+    <div class="top-actions">
+        <h2 style="margin:0;font-size:28px;">Danh sách đơn hàng</h2>
+        <a th:href="@{/admin}">Về dashboard</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>SĐT</th>
+                <th>Thanh toán</th>
+                <th>Trạng thái đơn</th>
+                <th>Trạng thái tiền</th>
+                <th>Tổng SL</th>
+                <th>Tổng tiền</th>
+                <th>Ngày tạo</th>
+                <th>Xem</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.orderCode}"></td>
+                <td th:text="${order.customerName}"></td>
+                <td th:text="${order.phoneNumber}"></td>
+                <td th:text="${order.paymentMethod}"></td>
+                <td>
+                    <span class="status"
+                          th:classappend="${order.status.name() == 'PROCESSING' or order.status.name() == 'COMPLETED'} ? ' status-success' :
+                                           (${order.status.name() == 'PENDING_PAYMENT'} ? ' status-pending' : ' status-failed')"
+                          th:text="${order.status}">
+                    </span>
+                </td>
+                <td>
+                    <span class="status"
+                          th:classappend="${order.paymentStatus.name() == 'PAID'} ? ' status-success' :
+                                           (${order.paymentStatus.name() == 'PENDING' or order.paymentStatus.name() == 'UNPAID'} ? ' status-pending' : ' status-failed')"
+                          th:text="${order.paymentStatus}">
+                    </span>
+                </td>
+                <td th:text="${order.totalQuantity}"></td>
+                <td th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT')} + '₫'"></td>
+                <td th:text="${order.createdAt != null ? #temporals.format(order.createdAt,'dd/MM/yyyy HH:mm') : ''}"></td>
+                <td>
+                    <a class="view-link" th:href="@{/admin/orders/{id}(id=${order.id})}">Chi tiết</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

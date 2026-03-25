@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="adminHeader(title)">
+    <style>
+        body{margin:0;font-family:Arial,sans-serif;background:#efefef;color:#222}
+        a{text-decoration:none}
+        .admin-top{background:#ffd500;padding:16px 24px;font-size:26px;font-weight:800;color:#000}
+        .admin-nav{background:#111;padding:12px 24px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+        .admin-nav a,.admin-nav form button{color:#fff;font-weight:600;background:none;border:none;cursor:pointer;font:inherit}
+        .admin-spacer{flex:1}
+    </style>
+
+    <div class="admin-top">Thế Giới Di Động - Quản trị</div>
+    <div class="admin-nav">
+        <a th:if="${isAdmin}" th:href="@{/admin}">Dashboard</a>
+        <a th:if="${isAdmin}" th:href="@{/categories}">Danh mục</a>
+        <a th:if="${isAdmin or isManager}" th:href="@{/products}">Sản phẩm</a>
+        <a th:if="${isAdmin}" th:href="@{/admin/orders}">Đơn hàng</a>
+        <a th:href="@{/}">Trang chủ</a>
+        <div class="admin-spacer"></div>
+        <span th:if="${currentUserAccount != null}" style="color:#ffd500;font-weight:700" th:text="${currentUserAccount.fullName}"></span>
+        <form th:if="${currentUserAccount != null}" th:action="@{/auth/logout}" method="post">
+            <button type="submit">Đăng xuất</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

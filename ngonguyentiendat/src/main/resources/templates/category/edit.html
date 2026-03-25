@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa danh mục</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#e5e5e5;color:#222}
+    .admin-shell{width:820px;max-width:95%;margin:24px auto 32px}
+    .admin-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .admin-title{background:#f4e04d;padding:18px 24px;font-size:26px;font-weight:800;text-transform:uppercase;text-align:center}
+    .admin-body{padding:28px}
+    .field{margin-bottom:16px}
+    label{display:block;margin-bottom:8px;font-size:15px;font-weight:700}
+    input, select{
+        width:100%;
+        height:42px;
+        border:1px solid #d8d8d8;
+        border-radius:6px;
+        padding:0 12px;
+        font-size:15px;
+    }
+    .preview{margin-top:10px}
+    .preview img{
+        width:84px;
+        height:84px;
+        object-fit:cover;
+        border-radius:8px;
+        border:1px solid #ddd;
+        background:#fff;
+    }
+    .error-text{display:block;color:#d70018;font-size:13px;margin-top:6px}
+    .message-error{margin-bottom:14px;padding:12px;border-radius:8px;background:#f8d7da;color:#721c24;font-weight:700}
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{
+        display:inline-flex;align-items:center;justify-content:center;
+        min-width:150px;height:44px;border-radius:8px;
+        text-decoration:none;font-weight:800;border:none;cursor:pointer
+    }
+    .btn-cancel{background:#f1f1f1;color:#333}
+    .btn-save{background:#d70018;color:#fff}
+
+    .hint{font-size:13px;color:#666;margin-top:6px}
+</style>
+
+<div class="admin-shell">
+    <div class="admin-card">
+        <div class="admin-title">Sửa danh mục</div>
+
+        <div class="admin-body">
+            <div th:if="${errorMessage}" class="message-error" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/categories/edit/{id}(id=${category.id})}" th:object="${category}" method="post" enctype="multipart/form-data">
+                <div class="field">
+                    <label>Tên danh mục:</label>
+                    <input type="text" th:field="*{name}">
+                    <small class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+                </div>
+
+                <div class="field">
+                    <label>Nhóm (Cho menu Phụ kiện):</label>
+                    <select th:field="*{menuGroup}">
+                        <option value="">-- Không thuộc nhóm --</option>
+                        <option th:each="groupOption : ${menuGroupOptions.entrySet()}"
+                                th:value="${groupOption.key}"
+                                th:text="${groupOption.value}">
+                        </option>
+                    </select>
+                    <div class="hint">Dropdown menu "Phụ kiện" sẽ tự nhóm danh mục theo lựa chọn này.</div>
+                </div>
+
+                <div class="field">
+                    <label>Ảnh hiện tại:</label>
+                    <div class="preview">
+                        <img id="categoryImagePreview"
+                             th:src="${category.imageUrl != null ? category.imageUrl : ''}"
+                             alt="Preview ảnh danh mục">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Chọn ảnh mới:</label>
+                    <input type="file" name="imageFile" accept="image/*" id="categoryImageInput">
+                </div>
+
+                <div class="actions">
+                    <a class="btn btn-cancel" th:href="@{/categories}">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-save">Cập nhật danh mục</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+<script>
+    const categoryImageInput = document.getElementById('categoryImageInput');
+    const categoryImagePreview = document.getElementById('categoryImagePreview');
+
+    if (categoryImageInput) {
+        categoryImageInput.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                categoryImagePreview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+
+</body>
+</html>

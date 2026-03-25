@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Category API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --yellow: #ffd400;
+            --black: #1f1f1f;
+            --border: #e5e7eb;
+            --danger: #dc3545;
+            --success: #198754;
+            --warning: #ffb100;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f3f4f6; color: #111827; font-family: Arial, sans-serif; }
+        .api-shell { max-width: 1280px; margin: 24px auto; padding: 0 16px 40px; }
+        .api-title { background: linear-gradient(135deg, #111827, #2d2d2d); color: #fff; border-radius: 18px; padding: 22px 24px; margin-bottom: 18px; }
+        .grid { display: grid; grid-template-columns: 390px 1fr; gap: 18px; }
+        .card { background: #fff; border-radius: 18px; border: 1px solid var(--border); overflow: hidden; }
+        .card-header { background: var(--yellow); padding: 16px 18px; font-weight: 700; font-size: 18px; }
+        .card-body { padding: 18px; }
+        .form-grid { display: grid; gap: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .form-control { width: 100%; height: 42px; border: 1px solid #d1d5db; border-radius: 12px; padding: 0 12px; font-size: 14px; }
+        textarea.form-control { height: 96px; padding: 10px 12px; resize: vertical; }
+        .actions, .toolbar, .table-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { border: none; border-radius: 12px; padding: 11px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .btn-primary { background: var(--yellow); color: #111; }
+        .btn-dark { background: var(--black); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-warning { background: var(--warning); color: #111; }
+        .message { display: none; margin-bottom: 14px; padding: 12px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; }
+        .message.success { display: block; background: #e8fff1; color: #0f7a42; }
+        .message.error { display: block; background: #fff1f2; color: #b42318; }
+        .table-wrap { overflow: auto; border-radius: 14px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 760px; }
+        thead { background: #111827; color: #fff; }
+        th, td { padding: 12px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; font-size: 14px; }
+        .preview { margin-top: 16px; background: #0f172a; color: #e5e7eb; border-radius: 14px; padding: 14px; font-size: 12px; white-space: pre-wrap; min-height: 120px; overflow: auto; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #f3f4f6; }
+        @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<div class="api-shell">
+    <div class="api-title">
+        <h1>Category API Tester</h1>
+        <p>Thêm / sửa / xóa / xem danh mục bằng AJAX.</p>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-header">Form danh mục</div>
+            <div class="card-body">
+                <div id="messageBox" class="message"></div>
+                <input type="hidden" id="categoryId">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Tên danh mục</label>
+                        <input id="name" class="form-control" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="slug">Slug</label>
+                        <input id="slug" class="form-control" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="imageUrl">Ảnh</label>
+                        <input id="imageUrl" class="form-control" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="actions" style="margin-top: 12px;">
+                    <button class="btn btn-primary" id="saveBtn">Lưu danh mục</button>
+                    <button class="btn btn-dark" id="resetBtn" type="button">Làm mới form</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Danh sách danh mục API</div>
+            <div class="card-body">
+                <div class="toolbar" style="justify-content: space-between; margin-bottom: 14px;">
+                    <div><strong>Endpoint:</strong> <span class="badge">/api/categories</span></div>
+                    <button class="btn btn-warning" id="reloadBtn" type="button">Tải lại dữ liệu</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Slug</th>
+                            <th>Ảnh</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                        <tr><td colspan="5">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="preview" id="apiPreview">Chưa có phản hồi API.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/categories';
+
+    const els = {
+        categoryId: document.getElementById('categoryId'),
+        name: document.getElementById('name'),
+        slug: document.getElementById('slug'),
+        imageUrl: document.getElementById('imageUrl'),
+        description: document.getElementById('description'),
+        tableBody: document.getElementById('categoryTableBody'),
+        apiPreview: document.getElementById('apiPreview'),
+        messageBox: document.getElementById('messageBox'),
+        saveBtn: document.getElementById('saveBtn'),
+        resetBtn: document.getElementById('resetBtn'),
+        reloadBtn: document.getElementById('reloadBtn')
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        els.saveBtn.addEventListener('click', saveCategory);
+        els.resetBtn.addEventListener('click', resetForm);
+        els.reloadBtn.addEventListener('click', loadCategories);
+        loadCategories();
+    });
+
+    async function loadCategories() {
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            setPreview(data);
+            renderTable(data);
+        } catch (e) {
+            showMessage('Không tải được danh mục.', 'error');
+        }
+    }
+
+    function renderTable(items) {
+        if (!Array.isArray(items) || items.length === 0) {
+            els.tableBody.innerHTML = '<tr><td colspan="5">Chưa có danh mục.</td></tr>';
+            return;
+        }
+
+        els.tableBody.innerHTML = items.map(c => `
+            <tr>
+                <td>${c.id ?? ''}</td>
+                <td>${escapeHtml(c.name ?? '')}</td>
+                <td>${escapeHtml(c.slug ?? '')}</td>
+                <td>${escapeHtml(c.imageUrl ?? '')}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn btn-success" onclick="editCategory(${c.id})">Sửa</button>
+                        <button class="btn btn-danger" onclick="deleteCategory(${c.id})">Xóa</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function saveCategory() {
+        clearMessage();
+
+        const payload = {
+            name: els.name.value.trim(),
+            slug: els.slug.value.trim(),
+            imageUrl: els.imageUrl.value.trim(),
+            description: els.description.value.trim()
+        };
+
+        const id = els.categoryId.value.trim();
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/${id}` : API_URL;
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            setPreview(data);
+
+            if (!res.ok) {
+                showMessage(buildErrorMessage(data), 'error');
+                return;
+            }
+
+            showMessage(id ? 'Cập nhật danh mục thành công.' : 'Thêm danh mục thành công.', 'success');
+            resetForm(false);
+            loadCategories();
+        } catch (e) {
+            showMessage('Không gọi được API lưu danh mục.', 'error');
+        }
+    }
+
+    async function editCategory(id) {
+        try {
+            const res = await fetch(`${API_URL}/${id}`);
+            const data = await res.json();
+            setPreview(data);
+
+            if (!res.ok) {
+                showMessage(data.message || 'Không lấy được chi tiết danh mục.', 'error');
+                return;
+            }
+
+            els.categoryId.value = data.id ?? '';
+            els.name.value = data.name ?? '';
+            els.slug.value = data.slug ?? '';
+            els.imageUrl.value = data.imageUrl ?? '';
+            els.description.value = data.description ?? '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage(`Đã nạp danh mục #${id} lên form.`, 'success');
+        } catch (e) {
+            showMessage('Không gọi được API chi tiết danh mục.', 'error');
+        }
+    }
+
+    async function deleteCategory(id) {
+        if (!confirm(`Bạn có chắc muốn xóa danh mục #${id}?`)) return;
+
+        try {
+            const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            setPreview(data);
+
+            if (!res.ok) {
+                showMessage(data.message || 'Xóa danh mục thất bại.', 'error');
+                return;
+            }
+
+            showMessage('Xóa danh mục thành công.', 'success');
+            if (String(els.categoryId.value) === String(id)) resetForm(false);
+            loadCategories();
+        } catch (e) {
+            showMessage('Không gọi được API xóa danh mục.', 'error');
+        }
+    }
+
+    function resetForm(showMsg = true) {
+        els.categoryId.value = '';
+        els.name.value = '';
+        els.slug.value = '';
+        els.imageUrl.value = '';
+        els.description.value = '';
+        if (showMsg) showMessage('Đã làm mới form.', 'success');
+    }
+
+    function setPreview(data) {
+        els.apiPreview.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function showMessage(message, type) {
+        els.messageBox.className = `message ${type}`;
+        els.messageBox.textContent = message;
+    }
+
+    function clearMessage() {
+        els.messageBox.className = 'message';
+        els.messageBox.textContent = '';
+    }
+
+    function buildErrorMessage(data) {
+        if (!data) return 'Có lỗi xảy ra.';
+        if (data.errors) return Object.values(data.errors).join(' | ');
+        return data.message || 'Có lỗi xảy ra.';
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.name}">Chi tiết sản phẩm</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#e5e5e5;color:#222}
+    .container{
+        width:1368px;
+        max-width:95%;
+        margin:22px auto 30px;
+    }
+    .detail-box{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:24px;
+        background:#fff;
+        border-radius:18px;
+        padding:24px;
+        box-shadow:0 2px 8px rgba(0,0,0,.06);
+    }
+    .gallery{
+        background:#fff;
+        border-radius:14px;
+    }
+    .gallery img{
+        width:100%;
+        max-height:430px;
+        object-fit:contain;
+        display:block;
+    }
+    .product-name{
+        font-size:30px;
+        font-weight:800;
+        margin-bottom:10px;
+        line-height:1.3;
+    }
+    .meta{
+        color:#666;
+        margin-bottom:14px;
+        font-size:14px;
+    }
+    .price{
+        color:#d70018;
+        font-size:32px;
+        font-weight:800;
+        margin-bottom:8px;
+    }
+    .old-price-row{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-bottom:14px;
+        flex-wrap:wrap;
+    }
+    .old-price{
+        color:#999;
+        font-size:18px;
+        text-decoration:line-through;
+    }
+    .discount-percent{
+        color:#d70018;
+        font-size:16px;
+        font-weight:700;
+    }
+    .promo-stock-badge{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:30px;
+        padding:0 14px;
+        margin-bottom:14px;
+        border-radius:999px;
+        background:linear-gradient(90deg, #ffcc33 0%, #ffb300 100%);
+        color:#5a3900;
+        font-size:13px;
+        font-weight:800;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.45);
+    }
+    .status-wrap{
+        margin-bottom:14px;
+    }
+    .status-badge{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:6px 12px;
+        border-radius:999px;
+        font-size:13px;
+        font-weight:800;
+    }
+    .status-instock{
+        background:#e9f7ef;
+        color:#1e7e34;
+    }
+    .status-low{
+        background:#fff1e6;
+        color:#d97706;
+    }
+    .status-coming{
+        background:#f3e8ff;
+        color:#7c3aed;
+    }
+    .promo-box{
+        background:#f7f7f7;
+        border-radius:12px;
+        padding:14px 16px;
+        color:#444;
+        line-height:1.6;
+        margin-bottom:16px;
+    }
+    .purchase-box{
+        background:#fff8e8;
+        border:1px solid #ffe2a8;
+        border-radius:14px;
+        padding:16px;
+        margin-bottom:16px;
+    }
+    .purchase-title{
+        font-size:15px;
+        font-weight:800;
+        margin-bottom:12px;
+    }
+    .qty-row{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        margin-bottom:14px;
+        flex-wrap:wrap;
+    }
+    .qty-label{
+        font-size:14px;
+        font-weight:700;
+        min-width:70px;
+    }
+    .qty-input{
+        width:90px;
+        height:42px;
+        border:1px solid #ddd;
+        border-radius:10px;
+        padding:0 12px;
+        font-size:15px;
+        outline:none;
+        background:#fff;
+    }
+    .action-group{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:12px;
+    }
+    .btn-submit{
+        height:46px;
+        border:none;
+        border-radius:12px;
+        font-size:15px;
+        font-weight:800;
+        cursor:pointer;
+    }
+    .btn-add-cart{
+        background:#fff;
+        color:#2f80ed;
+        border:1px solid #cfe1ff;
+    }
+    .btn-buy-now{
+        background:#d70018;
+        color:#fff;
+    }
+    .flash-message{
+        padding:12px 14px;
+        border-radius:12px;
+        margin-bottom:16px;
+        font-size:14px;
+        font-weight:700;
+    }
+    .flash-success{
+        background:#e9f7ef;
+        color:#1e7e34;
+    }
+    .flash-error{
+        background:#fff1f0;
+        color:#d93025;
+    }
+    .desc{
+        line-height:1.7;
+        color:#444;
+        background:#fafafa;
+        border-radius:12px;
+        padding:16px;
+        border:1px solid #eee;
+    }
+    .section-title{
+        font-size:26px;
+        font-weight:800;
+        margin:26px 0 16px;
+    }
+    .related-grid{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:16px;
+    }
+    .related-card{
+        background:#fff;
+        border-radius:16px;
+        padding:14px;
+        box-shadow:0 2px 8px rgba(0,0,0,.06);
+        transition:.2s;
+    }
+    .related-card:hover{
+        transform:translateY(-2px);
+        box-shadow:0 6px 14px rgba(0,0,0,.08);
+    }
+    .related-card a{
+        text-decoration:none;
+        color:inherit;
+        display:block;
+    }
+    .related-card img{
+        width:100%;
+        height:200px;
+        object-fit:contain;
+    }
+    .related-name{
+        font-size:15px;
+        font-weight:700;
+        min-height:44px;
+        margin:10px 0 8px;
+        line-height:1.45;
+    }
+    .related-price{
+        color:#d70018;
+        font-size:20px;
+        font-weight:800;
+        margin-bottom:6px;
+    }
+    .related-old-price{
+        color:#999;
+        font-size:14px;
+        text-decoration:line-through;
+    }
+
+    @media (max-width:992px){
+        .detail-box{grid-template-columns:1fr;}
+        .related-grid{grid-template-columns:repeat(2,1fr);}
+        .action-group{grid-template-columns:1fr;}
+    }
+
+    @media (max-width:768px){
+        .related-grid{grid-template-columns:1fr 1fr;}
+        .product-name{font-size:24px;}
+        .price{font-size:26px;}
+    }
+</style>
+
+<div class="container">
+    <div th:if="${successMessage}" class="flash-message flash-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="flash-message flash-error" th:text="${errorMessage}"></div>
+
+    <div class="detail-box">
+        <div class="gallery">
+            <img th:src="${product.thumbnailUrl}" alt="">
+        </div>
+
+        <div>
+            <div class="product-name" th:text="${product.name}"></div>
+
+            <div class="meta">
+                Danh mục: <span th:text="${product.category.name}"></span>
+            </div>
+
+            <div class="price"
+                 th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + '₫'"></div>
+
+            <div class="old-price-row"
+                 th:if="${product.hasDiscount()}">
+                <span class="old-price"
+                      th:text="${#numbers.formatDecimal(product.originalPrice,0,'COMMA',0,'POINT')} + '₫'"></span>
+                <span class="discount-percent"
+                      th:text="${'-' + product.discountPercent + '%'}"></span>
+            </div>
+
+            <div class="promo-stock-badge"
+                 th:if="${product.promotionStock != null and product.promotionStock > 0}"
+                 th:text="${'🔥 Còn ' + product.promotionStock + ' suất giá khuyến mãi'}"></div>
+
+            <div class="status-wrap">
+                <span th:if="${product.stockStatus.name() == 'CON_HANG'}" class="status-badge status-instock">Còn hàng</span>
+                <span th:if="${product.stockStatus.name() == 'SAP_HET_HANG'}" class="status-badge status-low">Sắp hết hàng</span>
+                <span th:if="${product.stockStatus.name() == 'SAP_VE_HANG'}" class="status-badge status-coming">Sắp về hàng</span>
+            </div>
+
+            <div class="promo-box">
+                <span th:if="${product.promotionType == 'NONE'}">Không có chương trình khuyến mãi.</span>
+                <span th:if="${product.promotionType == 'FLASHSALE'}"
+                      th:text="${'Chương trình khuyến mãi: Flash Sale - còn ' + (product.promotionStock == null ? 0 : product.promotionStock) + ' suất'}"></span>
+                <span th:if="${product.promotionType == 'ONLINE_ONLY'}"
+                      th:text="${'Chương trình khuyến mãi: Online Only - còn ' + (product.promotionStock == null ? 0 : product.promotionStock) + ' suất'}"></span>
+                <span th:if="${product.promotionType == 'GIFT'}">Chương trình khuyến mãi: Quà tặng</span>
+            </div>
+
+            <div class="purchase-box">
+                <div class="purchase-title">Mua sản phẩm</div>
+
+                <div th:if="${product.isOnlinePromotion() and (product.promotionStock == null or product.promotionStock <= 0)}"
+                     style="padding:14px 16px;border-radius:12px;background:#fff1f0;color:#d93025;font-weight:700;line-height:1.6;">
+                    Sản phẩm flash sale đã hết suất, hiện không còn hiển thị trong khu vực Flash Sale.
+                </div>
+
+                <div th:if="${!product.isOnlinePromotion() or (product.promotionStock != null and product.promotionStock > 0)}">
+                    <form th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <input type="hidden" name="redirect" value="back">
+
+                        <div class="qty-row">
+                            <div class="qty-label">Số lượng</div>
+                            <input class="qty-input" type="number" name="quantity" min="1" th:attr="max=${product.promotionStock != null ? product.promotionStock : null}" value="1">
+                        </div>
+
+                        <div class="action-group">
+                            <button type="submit" class="btn-submit btn-add-cart">Thêm vào giỏ hàng</button>
+                        </div>
+                    </form>
+
+                    <form th:action="@{/cart/buy-now}" method="post" style="margin-top:12px;">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <div class="qty-row">
+                            <div class="qty-label">Mua ngay</div>
+                            <input class="qty-input" type="number" name="quantity" min="1" th:attr="max=${product.promotionStock != null ? product.promotionStock : null}" value="1">
+                        </div>
+                        <button type="submit" class="btn-submit btn-buy-now" style="width:100%;">Mua ngay</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="desc" th:text="${product.description}"></div>
+        </div>
+    </div>
+
+    <div class="section-title">Sản phẩm liên quan</div>
+
+    <div class="related-grid">
+        <div class="related-card" th:each="item : ${relatedProducts}">
+            <a th:href="@{/product/{slug}(slug=${item.slug})}">
+                <img th:src="${item.thumbnailUrl}" alt="">
+                <div class="related-name" th:text="${item.name}"></div>
+
+                <div class="related-price"
+                     th:text="${#numbers.formatDecimal(item.price,0,'COMMA',0,'POINT')} + '₫'"></div>
+
+                <div class="related-old-price"
+                     th:if="${item.hasDiscount()}"
+                     th:text="${#numbers.formatDecimal(item.originalPrice,0,'COMMA',0,'POINT')} + '₫'"></div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="siteFooter">
+    <style>
+        .site-footer{
+            margin-top:40px;
+            background:#fff;
+            border-top:1px solid #e5e5e5;
+            padding:24px 0;
+        }
+        .site-footer .inner{
+            width:1200px;
+            max-width:95%;
+            margin:auto;
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:20px;
+            font-size:14px;
+            color:#444;
+        }
+        .site-footer h4{
+            margin:0 0 10px;
+            font-size:16px;
+        }
+    </style>
+
+    <footer class="site-footer">
+        <div class="inner">
+            <div>
+                <h4>Tổng đài hỗ trợ</h4>
+                <div>Mua hàng: 1900 xxxx</div>
+                <div>Khiếu nại: 1900 xxxx</div>
+            </div>
+            <div>
+                <h4>Về công ty</h4>
+                <div>Giới thiệu</div>
+                <div>Tuyển dụng</div>
+            </div>
+            <div>
+                <h4>Thông tin khác</h4>
+                <div>Chính sách bảo hành</div>
+                <div>Trả góp</div>
+            </div>
+            <div>
+                <h4>Website cùng tập đoàn</h4>
+                <div>TopZone</div>
+                <div>Điện Máy Xanh</div>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

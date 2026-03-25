@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận đơn hàng</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#f3f3f3;color:#222}
+    .confirm-page{
+        width:1000px;
+        max-width:95%;
+        margin:30px auto 40px;
+    }
+    .confirm-box{
+        background:#fff;
+        border-radius:20px;
+        box-shadow:0 2px 10px rgba(0,0,0,.06);
+        padding:30px;
+        text-align:center;
+    }
+    .success-icon{
+        width:90px;
+        height:90px;
+        margin:0 auto 18px;
+        border-radius:50%;
+        background:#e9f7ef;
+        color:#1e7e34;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:44px;
+        font-weight:900;
+    }
+    .title{
+        font-size:36px;
+        font-weight:800;
+        margin-bottom:8px;
+    }
+    .subtitle{
+        color:#666;
+        font-size:16px;
+        line-height:1.7;
+        margin-bottom:22px;
+    }
+    .info-card{
+        text-align:left;
+        margin:0 auto;
+        max-width:720px;
+        background:#fafafa;
+        border:1px solid #eee;
+        border-radius:16px;
+        padding:20px;
+    }
+    .info-header{
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+        font-size:15px;
+        font-weight:800;
+        padding-bottom:14px;
+        border-bottom:1px solid #e6e6e6;
+        margin-bottom:16px;
+    }
+    .info-grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:16px 24px;
+    }
+    .info-label{
+        font-size:13px;
+        color:#888;
+        font-weight:700;
+        margin-bottom:4px;
+        text-transform:uppercase;
+    }
+    .info-value{
+        font-size:18px;
+        font-weight:800;
+        color:#222;
+        line-height:1.5;
+    }
+    .total{
+        color:#d70018;
+    }
+    .actions{
+        margin-top:22px;
+        display:flex;
+        justify-content:center;
+        gap:12px;
+        flex-wrap:wrap;
+    }
+    .btn{
+        min-width:180px;
+        height:46px;
+        border-radius:12px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-size:15px;
+        font-weight:800;
+    }
+    .btn-primary{background:#d70018;color:#fff}
+    .btn-secondary{background:#fff;border:1px solid #ddd;color:#444}
+
+    @media (max-width: 768px){
+        .title{font-size:30px}
+        .info-grid{grid-template-columns:1fr}
+    }
+</style>
+
+<div class="confirm-page">
+    <div class="confirm-box">
+        <div class="success-icon">✓</div>
+        <div class="title">Cảm ơn bạn đã đặt hàng!</div>
+        <div class="subtitle">
+            Đơn hàng của bạn đã được ghi nhận thành công.<br>
+            Chúng tôi sẽ sớm liên hệ để xác nhận và giao hàng.
+        </div>
+
+        <div class="info-card">
+            <div class="info-header">
+                <div>Mã đơn hàng: <span th:text="${order.orderCode}"></span></div>
+                <div th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
+            </div>
+
+            <div class="info-grid">
+                <div>
+                    <div class="info-label">Người nhận</div>
+                    <div class="info-value" th:text="${order.customerName}"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Số điện thoại</div>
+                    <div class="info-value" th:text="${order.phoneNumber}"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Địa chỉ</div>
+                    <div class="info-value" th:text="${order.address}"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Thanh toán</div>
+                    <div class="info-value" th:text="${order.paymentMethod}"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Tổng tiền</div>
+                    <div class="info-value total"
+                         th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT')} + '₫'"></div>
+                </div>
+
+                <div th:if="${order.voucherCode != null}">
+                    <div class="info-label">Voucher đã dùng</div>
+                    <div class="info-value" th:text="${order.voucherCode + ' (-' + order.voucherDiscountPercent + '%)'}"></div>
+                </div>
+
+                <div>
+                    <div class="info-label">Điểm thưởng</div>
+                    <div class="info-value" th:text="${'+' + order.loyaltyPointsEarned + ' điểm'}"></div>
+                </div>
+
+                <div th:if="${currentUserAccount != null}">
+                    <div class="info-label">Điểm hiện có</div>
+                    <div class="info-value" th:text="${currentUserAccount.loyaltyPoints + ' điểm'}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-primary">Xem chi tiết đơn</a>
+            <a th:href="@{/}" class="btn btn-secondary">Về trang chủ</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+</body>
+</html>

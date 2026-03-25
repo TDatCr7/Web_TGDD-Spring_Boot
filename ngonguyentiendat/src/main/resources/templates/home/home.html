@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thegioididong.com - Điện thoại, Laptop, Phụ kiện, Đồng hồ chính hãng</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/site-header :: siteHeader(${categories})}"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{
+        margin:0;
+        font-family:Arial,sans-serif;
+        background:#f3f3f3;
+        color:#222;
+    }
+    a{text-decoration:none;color:inherit}
+
+    :root{
+        --page-container:1200px;
+        --shell-max:1700px;
+        --shell-padding:8px;
+        --side-width:112px;
+        --layout-gap:12px;
+        --promo-bg:#ffffff;
+        --promo-inner:#fff2c5;
+        --count-bg:#dfe2ea;
+    }
+
+    .page-shell{
+        width:min(calc(var(--page-container) + var(--side-width) * 2 + var(--layout-gap) * 2), calc(100vw - var(--shell-padding) * 2));
+        margin:12px auto 28px;
+        display:grid;
+        grid-template-columns:var(--side-width) minmax(0, var(--page-container)) var(--side-width);
+        gap:var(--layout-gap);
+        align-items:start;
+    }
+
+    .side-banner{
+        position:sticky;
+        top:300px;
+        align-self:start;
+    }
+
+    .side-banner img{
+        width:100%;
+        display:block;
+        border-radius:10px;
+    }
+
+    .home-wrap{
+        width:100%;
+        min-width:0;
+    }
+
+    .hero-banner{
+        width:100%;
+        margin-bottom:18px;
+    }
+
+    .hero-banner-box{
+        width:100%;
+        background:#fff;
+        border-radius:16px;
+        overflow:hidden;
+        box-shadow:0 2px 8px rgba(0,0,0,.06);
+        border:1px solid #eaeaea;
+    }
+
+    .hero-banner-link{
+        display:block;
+        width:100%;
+        line-height:0;
+    }
+
+    .hero-banner-link img{
+        width:100%;
+        height:auto;
+        display:block;
+        object-fit:cover;
+    }
+
+    .promo-title{
+        font-size:20px;
+        line-height:1.2;
+        font-weight:800;
+        color:#1f2d3d;
+        margin:0 0 12px;
+    }
+
+    .promo-section{
+        background:var(--promo-bg);
+        border-radius:18px;
+        padding:0 0 18px;
+        overflow:hidden;
+        margin-bottom:20px;
+        box-shadow:0 2px 10px rgba(0,0,0,.06);
+        border:1px solid #ececec;
+    }
+
+    .promo-tabs{
+        display:grid;
+        grid-template-columns:132px 132px 150px repeat(6,1fr);
+        background:#fff;
+        overflow:hidden;
+        border-bottom:1px solid #ececec;
+    }
+
+    .promo-tab{
+        min-height:60px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        padding:6px 10px;
+        font-size:14px;
+        font-weight:500;
+        color:#2b2b2b;
+        border-right:1px solid #f0f0f0;
+        background:#fff;
+    }
+
+    .promo-tab:last-child{
+        border-right:none;
+    }
+
+    .promo-tab.image-tab{
+        padding:0;
+        line-height:0;
+    }
+
+    .promo-tab.image-tab img{
+        width:100%;
+        height:60px;
+        object-fit:contain;
+        display:block;
+    }
+
+    .promo-inner{
+        background:linear-gradient(180deg, #fff4c9 0%, #fff0ae 100%);
+        padding:12px 14px 0;
+    }
+
+    .countdown-row{
+        display:grid;
+        grid-template-columns:180px repeat(4,1fr);
+        align-items:stretch;
+        background:var(--count-bg);
+        border-radius:18px;
+        overflow:hidden;
+        min-height:72px;
+        margin-bottom:14px;
+    }
+
+    .count-box{
+        background:#f6a000;
+        color:#fff;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        font-size:14px;
+        font-weight:800;
+        margin:7px;
+        border-radius:16px;
+        text-align:center;
+    }
+
+    .count-box .time{
+        margin-top:6px;
+        display:flex;
+        align-items:center;
+        gap:4px;
+        font-size:0;
+    }
+
+    .count-box .time span{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:24px;
+        height:24px;
+        background:#fff;
+        color:#f6a000;
+        border-radius:7px;
+        font-size:14px;
+        font-weight:900;
+        line-height:1;
+    }
+
+    .count-box .time em{
+        font-style:normal;
+        font-size:14px;
+        font-weight:900;
+        color:#fff;
+    }
+
+    .count-coming{
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        color:#4d5562;
+        font-size:13px;
+        font-weight:500;
+        padding:7px;
+    }
+
+    .count-coming span{
+        display:block;
+        margin-top:6px;
+        color:#394150;
+        font-size:13px;
+        font-weight:500;
+    }
+
+    .product-grid{
+        display:grid;
+        grid-template-columns:repeat(6,1fr);
+        gap:10px;
+        padding-bottom:2px;
+    }
+
+    .product-card{
+        background:#fff;
+        border-radius:10px;
+        overflow:hidden;
+        border:1px solid #ececec;
+        transition:.2s;
+        min-width:0;
+    }
+
+    .product-card:hover,
+    .normal-card:hover{
+        transform:translateY(-2px);
+        box-shadow:0 6px 14px rgba(0,0,0,.08);
+    }
+
+    .product-img-wrap{
+        position:relative;
+        padding:10px 10px 4px;
+        background:#fff;
+    }
+
+    .product-badge{
+        position:absolute;
+        top:8px;
+        left:8px;
+        background:#fff3db;
+        color:#d97706;
+        font-size:10px;
+        font-weight:800;
+        padding:4px 8px;
+        border-radius:999px;
+        z-index:2;
+        border:1px solid #ffe0a3;
+    }
+
+    .product-img-wrap img,
+    .normal-card img{
+        width:100%;
+        height:150px;
+        object-fit:contain;
+        display:block;
+        background:#fff;
+    }
+
+    .product-body,
+    .normal-body{
+        padding:0 10px 10px;
+    }
+
+    .product-name,
+    .normal-name{
+        font-size:13px;
+        line-height:1.45;
+        color:#333;
+        font-weight:500;
+        min-height:38px;
+        margin:8px 0 6px;
+    }
+
+    .product-price,
+    .normal-price{
+        color:#d70018;
+        font-size:18px;
+        font-weight:800;
+        margin-bottom:4px;
+    }
+
+    .old-price-row{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:8px;
+        min-height:20px;
+    }
+
+    .old-price{
+        color:#9e9e9e;
+        font-size:13px;
+        text-decoration:line-through;
+    }
+
+    .discount-percent{
+        color:#d70018;
+        font-size:13px;
+    }
+
+    .promo-stock-badge{
+        position:relative;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-height:24px;
+        padding:0 10px;
+        margin-bottom:8px;
+        border-radius:999px;
+        background:linear-gradient(90deg, #ffcc33 0%, #ffb300 100%);
+        color:#5a3900;
+        font-size:12px;
+        font-weight:800;
+        overflow:hidden;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.45);
+    }
+
+    .product-actions{
+        display:flex;
+        justify-content:center;
+        margin-top:8px;
+    }
+
+    .btn-buy{
+        width:100%;
+        text-align:center;
+        padding:7px 6px;
+        font-size:11px;
+        font-weight:700;
+        border-radius:4px;
+        background:#eef5ff;
+        color:#2f80ed;
+    }
+
+    .more-wrap{
+        text-align:center;
+        margin-top:16px;
+    }
+
+    .more-btn{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        background:#fff;
+        color:#2f80ed;
+        border-radius:8px;
+        padding:12px 22px;
+        font-size:14px;
+        font-weight:800;
+        text-decoration:none;
+        border:1px solid #e8e8e8;
+    }
+
+    .normal-wrap{
+        background:#fff;
+        border-radius:18px;
+        padding:18px 14px 18px;
+        box-shadow:0 2px 10px rgba(0,0,0,.06);
+        margin-top:18px;
+        border:1px solid #ececec;
+    }
+
+    .normal-title{
+        font-size:18px;
+        font-weight:900;
+        color:#1f2d3d;
+        text-transform:uppercase;
+        margin:0 0 14px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+    }
+
+    .normal-title:before{
+        content:"✨";
+        font-size:20px;
+    }
+
+    .normal-section{
+        display:grid;
+        grid-template-columns:repeat(6,1fr);
+        gap:10px;
+    }
+
+    .normal-card{
+        background:#fff;
+        border-radius:10px;
+        border:1px solid #ececec;
+        overflow:hidden;
+        transition:.2s;
+        min-width:0;
+    }
+
+    .normal-top-tag{
+        display:inline-block;
+        font-size:11px;
+        padding:3px 6px;
+        border-radius:4px;
+        background:#f5f5f5;
+        color:#444;
+        margin:10px 10px 0;
+    }
+
+    .rating-row{
+        display:flex;
+        align-items:center;
+        gap:6px;
+        color:#666;
+        font-size:12px;
+        margin-top:6px;
+    }
+
+    .rating-star{
+        color:#f5a623;
+        font-size:13px;
+    }
+
+    .floating-admin-btn{
+        position:fixed;
+        left:16px;
+        bottom:18px;
+        z-index:120;
+        background:#111;
+        color:#ffd400;
+        padding:10px 14px;
+        border-radius:999px;
+        font-size:13px;
+        font-weight:800;
+        box-shadow:0 4px 14px rgba(0,0,0,.18);
+        text-decoration:none;
+    }
+
+    @media (max-width: 1280px){
+        :root{
+            --side-width:0px;
+            --page-container:min(1200px, calc(100vw - 16px));
+        }
+
+        .page-shell{
+            grid-template-columns:1fr;
+            width:min(var(--page-container), calc(100vw - 16px));
+        }
+
+        .side-banner{
+            display:none;
+        }
+
+        .promo-tabs{
+            grid-template-columns:120px 120px 130px repeat(3,1fr);
+        }
+
+        .product-grid,
+        .normal-section{
+            grid-template-columns:repeat(4,1fr);
+        }
+
+        .countdown-row{
+            grid-template-columns:170px repeat(2,1fr);
+        }
+    }
+
+    @media (max-width: 768px){
+        .page-shell{
+            width:calc(100vw - 12px);
+            margin-top:8px;
+        }
+
+        .promo-tabs{
+            grid-template-columns:repeat(3,1fr);
+        }
+
+        .promo-tab{
+            min-height:52px;
+            font-size:12px;
+            padding:6px;
+        }
+
+        .promo-tab.image-tab img{
+            height:52px;
+        }
+
+        .countdown-row{
+            grid-template-columns:1fr 1fr;
+            border-radius:16px;
+        }
+
+        .count-box{
+            grid-column:1 / -1;
+        }
+
+        .product-grid,
+        .normal-section{
+            grid-template-columns:repeat(2,1fr);
+        }
+
+        .product-img-wrap img,
+        .normal-card img{
+            height:130px;
+        }
+
+        .floating-admin-btn{
+            left:10px;
+            bottom:10px;
+        }
+    }
+</style>
+
+<div class="page-shell">
+    <aside class="side-banner left-banner">
+        <img th:src="@{/images/side-left.png}" alt="Banner trái">
+    </aside>
+
+    <div class="home-wrap">
+        <section class="hero-banner">
+            <div class="hero-banner-box">
+                <a href="#" class="hero-banner-link">
+                    <img th:src="@{/images/banner-home.jpg}" alt="Banner khuyến mãi">
+                </a>
+            </div>
+        </section>
+
+        <div class="promo-title">Khuyến mãi online</div>
+
+        <section class="promo-section">
+            <div class="promo-tabs">
+                <div class="promo-tab image-tab">
+                    <img th:src="@{/images/tab-flashsale.png}" alt="Flash sale">
+                </div>
+                <div class="promo-tab image-tab">
+                    <img th:src="@{/images/tab-83.png}" alt="8.3">
+                </div>
+                <div class="promo-tab image-tab">
+                    <img th:src="@{/images/tab-onlineonly.png}" alt="Online only">
+                </div>
+                <div class="promo-tab">Điện Thoại</div>
+                <div class="promo-tab">Apple</div>
+                <div class="promo-tab">Laptop</div>
+                <div class="promo-tab">Phụ Kiện</div>
+                <div class="promo-tab">Đồng Hồ</div>
+                <div class="promo-tab">PC, Máy in</div>
+            </div>
+
+            <div class="promo-inner">
+                <div class="countdown-row">
+                    <div class="count-box">
+                        <div>Chỉ còn:</div>
+                        <div class="time">
+                            <span>00</span><em>:</em>
+                            <span>00</span><em>:</em>
+                            <span>46</span>
+                        </div>
+                    </div>
+
+                    <div class="count-coming">
+                        <div>Sắp diễn ra</div>
+                        <span>09:00</span>
+                    </div>
+
+                    <div class="count-coming">
+                        <div>Sắp diễn ra</div>
+                        <span>12:00</span>
+                    </div>
+
+                    <div class="count-coming">
+                        <div>Sắp diễn ra</div>
+                        <span>15:00</span>
+                    </div>
+
+                    <div class="count-coming">
+                        <div>Sắp diễn ra</div>
+                        <span>18:00</span>
+                    </div>
+                </div>
+
+                <div class="product-grid">
+                    <div class="product-card"
+                         th:each="product : ${products}"
+                         th:if="${product.promotionType != 'NONE' and (product.promotionStock != null and product.promotionStock > 0)}">
+                        <div class="product-img-wrap">
+                            <div class="product-badge"
+                                 th:text="
+                                    ${product.promotionType == 'FLASHSALE'} ? '⚡ Flash Sale' :
+                                    (${product.promotionType == 'ONLINE_ONLY'} ? '🛒 Online Only' :
+                                    (${product.promotionType == 'GIFT'} ? '🎁 Quà tặng' : '🔥 Khuyến mãi'))
+                                 ">
+                            </div>
+
+                            <a th:href="@{/product/{slug}(slug=${product.slug})}">
+                                <img th:src="${product.thumbnailUrl}" alt="">
+                            </a>
+                        </div>
+
+                        <div class="product-body">
+                            <a th:href="@{/product/{slug}(slug=${product.slug})}">
+                                <div class="product-name" th:text="${product.name}"></div>
+                            </a>
+
+                            <div class="product-price"
+                                 th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + '₫'"></div>
+
+                            <div class="old-price-row"
+                                 th:if="${product.originalPrice != null and product.price != null and product.price < product.originalPrice}">
+                                <span class="old-price"
+                                      th:text="${#numbers.formatDecimal(product.originalPrice,0,'COMMA',0,'POINT')} + '₫'"></span>
+                                <span class="discount-percent"
+                                      th:text="${'-' + product.discountPercent + '%'}"></span>
+                            </div>
+
+                            <div class="promo-stock-badge"
+                                 th:if="${product.promotionStock != null and product.promotionStock > 0}"
+                                 th:text="${'🔥 Còn ' + product.promotionStock + ' suất'}"></div>
+
+                            <div class="product-actions">
+                                <a class="btn-buy" th:href="@{/product/{slug}(slug=${product.slug})}">Mua ngay</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="more-wrap">
+                    <a href="#" class="more-btn">Xem thêm sản phẩm <span>›</span></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="normal-wrap">
+            <div class="normal-title">GỢI Ý CHO BẠN</div>
+
+            <div class="normal-section">
+                <div class="normal-card"
+                     th:each="product : ${products}"
+                     th:if="${product.promotionType == 'NONE' and product.originalPrice != null and product.price != null and product.price < product.originalPrice}">
+                    <div class="normal-top-tag">Trả chậm 0%</div>
+
+                    <a th:href="@{/product/{slug}(slug=${product.slug})}">
+                        <img th:src="${product.thumbnailUrl}" alt="">
+                        <div class="normal-body">
+                            <div class="normal-name" th:text="${product.name}"></div>
+
+                            <div class="normal-price"
+                                 th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + '₫'"></div>
+
+                            <div class="old-price-row">
+                                <span class="old-price"
+                                      th:text="${#numbers.formatDecimal(product.originalPrice,0,'COMMA',0,'POINT')} + '₫'"></span>
+                                <span class="discount-percent"
+                                      th:text="${'-' + product.discountPercent + '%'}"></span>
+                            </div>
+
+                            <div class="rating-row">
+                                <span class="rating-star">★</span>
+                                <span th:text="${product.rating}"></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <aside class="side-banner right-banner">
+        <img th:src="@{/images/side-right.png}" alt="Banner phải">
+    </aside>
+</div>
+
+<a class="floating-admin-btn" th:if="${isAdmin}" th:href="@{/admin}">⚙ Admin</a>
+
+<div th:replace="~{fragments/footer :: siteFooter}"></div>
+
+</body>
+</html>

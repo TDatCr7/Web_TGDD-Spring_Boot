@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn hàng</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/admin-header :: adminHeader('Chi tiết đơn hàng')}"></div>
+
+<style>
+    body{
+        margin:0;
+        font-family:Arial,sans-serif;
+        background:#efefef;
+        color:#222;
+    }
+    .admin-content{
+        width:1200px;
+        max-width:95%;
+        margin:24px auto 30px;
+        display:grid;
+        grid-template-columns:minmax(0, 1fr) 360px;
+        gap:18px;
+        align-items:start;
+    }
+    .box{
+        background:#fff;
+        border-radius:18px;
+        padding:20px;
+        box-shadow:0 3px 12px rgba(0,0,0,.06);
+    }
+    .section-title{
+        font-size:24px;
+        font-weight:900;
+        margin-bottom:16px;
+    }
+    .item{
+        display:grid;
+        grid-template-columns:90px minmax(0,1fr);
+        gap:14px;
+        padding:14px 0;
+        border-bottom:1px solid #eee;
+    }
+    .item:last-child{border-bottom:none}
+    .item img{
+        width:90px;
+        height:90px;
+        object-fit:contain;
+        border-radius:10px;
+        background:#fff;
+    }
+    .item-name{
+        font-size:16px;
+        font-weight:800;
+        margin-bottom:6px;
+        line-height:1.4;
+    }
+    .item-meta{
+        font-size:13px;
+        color:#666;
+        line-height:1.6;
+    }
+    .item-price{
+        color:#d70018;
+        font-size:18px;
+        font-weight:800;
+        margin-top:8px;
+    }
+    .info-block{
+        padding:12px 0;
+        border-bottom:1px dashed #eee;
+    }
+    .info-block:last-child{border-bottom:none}
+    .label{
+        font-size:13px;
+        color:#888;
+        font-weight:700;
+        margin-bottom:4px;
+        text-transform:uppercase;
+    }
+    .value{
+        font-size:16px;
+        font-weight:700;
+        line-height:1.6;
+        word-break:break-word;
+    }
+    .info-row{
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+        padding:10px 0;
+        border-bottom:1px dashed #eee;
+        font-size:15px;
+    }
+    .info-row.total{
+        font-size:22px;
+        font-weight:800;
+        color:#d70018;
+        border-bottom:none;
+        padding-top:16px;
+    }
+    .top-actions{
+        margin-bottom:16px;
+    }
+    .top-actions a{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:160px;
+        height:42px;
+        border-radius:10px;
+        background:#111;
+        color:#fff;
+        text-decoration:none;
+        font-weight:700;
+    }
+
+    @media (max-width: 992px){
+        .admin-content{
+            grid-template-columns:1fr;
+        }
+    }
+</style>
+
+<div class="admin-content">
+    <div class="box">
+        <div class="top-actions">
+            <a th:href="@{/admin/orders}">Quay lại danh sách</a>
+        </div>
+
+        <div class="section-title">Sản phẩm trong đơn</div>
+
+        <div class="item" th:each="detail : ${order.orderDetails}">
+            <img th:src="${detail.productThumbnailUrl}" alt="">
+            <div>
+                <div class="item-name" th:text="${detail.productName}"></div>
+
+                <div class="item-meta">Số lượng: <strong th:text="${detail.quantity}"></strong></div>
+                <div class="item-meta"
+                     th:if="${detail.promotionQuantity > 0 and detail.regularQuantity > 0}"
+                     th:text="${detail.promotionQuantity + ' sản phẩm giá khuyến mãi, ' + detail.regularQuantity + ' sản phẩm giá gốc'}"></div>
+                <div class="item-meta"
+                     th:if="${detail.promotionQuantity > 0 and detail.regularQuantity == 0}"
+                     th:text="${'Toàn bộ ' + detail.quantity + ' sản phẩm áp dụng giá khuyến mãi'}"></div>
+
+                <div class="item-price"
+                     th:text="${#numbers.formatDecimal(detail.lineAmount,0,'COMMA',0,'POINT')} + '₫'"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="section-title">Thông tin đơn hàng</div>
+
+        <div class="info-block">
+            <div class="label">Mã đơn</div>
+            <div class="value" th:text="${order.orderCode}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Khách hàng</div>
+            <div class="value" th:text="${order.customerName}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Số điện thoại</div>
+            <div class="value" th:text="${order.phoneNumber}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Email</div>
+            <div class="value" th:text="${order.email != null ? order.email : '-'}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Địa chỉ</div>
+            <div class="value" th:text="${order.address}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Phương thức thanh toán</div>
+            <div class="value" th:text="${order.paymentMethod}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Trạng thái đơn</div>
+            <div class="value" th:text="${order.status}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Trạng thái thanh toán</div>
+            <div class="value" th:text="${order.paymentStatus}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Mã tham chiếu thanh toán</div>
+            <div class="value" th:text="${order.paymentReference != null ? order.paymentReference : '-'}"></div>
+        </div>
+
+        <div class="info-block">
+            <div class="label">Ghi chú</div>
+            <div class="value" th:text="${order.notes != null ? order.notes : '-'}"></div>
+        </div>
+
+        <div class="info-row">
+            <span>Tạm tính</span>
+            <strong th:text="${#numbers.formatDecimal(order.subtotalAmount,0,'COMMA',0,'POINT')} + '₫'"></strong>
+        </div>
+
+        <div class="info-row">
+            <span>Phí vận chuyển</span>
+            <strong th:text="${#numbers.formatDecimal(order.shippingFee,0,'COMMA',0,'POINT')} + '₫'"></strong>
+        </div>
+
+        <div class="info-row" th:if="${order.loyaltyPointsUsed > 0}">
+            <span>Điểm sử dụng</span>
+            <strong th:text="${order.loyaltyPointsUsed + ' điểm'}"></strong>
+        </div>
+
+        <div class="info-row" th:if="${order.loyaltyDiscountAmount.compareTo(T(java.math.BigDecimal).ZERO) > 0}">
+            <span>Giảm từ điểm</span>
+            <strong th:text="${'-' + #numbers.formatDecimal(order.loyaltyDiscountAmount,0,'COMMA',0,'POINT') + '₫'}"></strong>
+        </div>
+
+        <div class="info-row total">
+            <span>Tổng cộng</span>
+            <span th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT')} + '₫'"></span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

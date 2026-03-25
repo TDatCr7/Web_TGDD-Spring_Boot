@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{
+        margin:0;
+        font-family:Arial,sans-serif;
+        background:#f3f4f6;
+        color:#222;
+    }
+    a{text-decoration:none;color:inherit}
+
+    .cart-page{
+        width:1200px;
+        max-width:95%;
+        margin:18px auto 32px;
+    }
+
+    .cart-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        margin-bottom:14px;
+    }
+
+    .page-title{
+        font-size:28px;
+        font-weight:800;
+        margin:0;
+        color:#1f2937;
+    }
+
+    .flash-message{
+        padding:12px 14px;
+        border-radius:12px;
+        margin-bottom:14px;
+        font-size:14px;
+        font-weight:700;
+    }
+    .flash-success{background:#e9f7ef;color:#1e7e34}
+    .flash-error{background:#fff1f0;color:#d93025}
+
+    .cart-layout{
+        display:grid;
+        grid-template-columns:minmax(0, 1fr) 360px;
+        gap:18px;
+        align-items:start;
+    }
+
+    .cart-box,
+    .summary-box{
+        background:#fff;
+        border-radius:18px;
+        box-shadow:0 2px 10px rgba(0,0,0,.06);
+        border:1px solid #ececec;
+    }
+
+    .cart-box{
+        padding:6px 18px 12px;
+    }
+
+    .summary-box{
+        padding:18px;
+        position:sticky;
+        top:110px;
+    }
+
+    .cart-item{
+        display:grid;
+        grid-template-columns:110px minmax(0,1fr);
+        gap:16px;
+        padding:18px 0;
+        border-bottom:1px solid #efefef;
+    }
+
+    .cart-item:last-child{
+        border-bottom:none;
+    }
+
+    .cart-thumb{
+        width:110px;
+        height:110px;
+        border-radius:12px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:#fff;
+        overflow:hidden;
+    }
+
+    .cart-thumb img{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        display:block;
+    }
+
+    .item-name{
+        font-size:17px;
+        font-weight:800;
+        line-height:1.45;
+        margin-bottom:8px;
+        color:#1f2937;
+    }
+
+    .item-meta{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        gap:10px;
+        margin-bottom:8px;
+    }
+
+    .price-main{
+        color:#d70018;
+        font-size:24px;
+        font-weight:800;
+    }
+
+    .price-note{
+        color:#6b7280;
+        font-size:13px;
+        font-weight:600;
+    }
+
+    .promo-note{
+        display:inline-flex;
+        align-items:center;
+        min-height:28px;
+        padding:0 12px;
+        border-radius:999px;
+        background:#fff7e6;
+        color:#b26a00;
+        font-size:13px;
+        font-weight:700;
+        margin-bottom:12px;
+    }
+
+    .qty-row{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:16px;
+        flex-wrap:wrap;
+    }
+
+    .qty-form{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+    }
+
+    .qty-label{
+        font-size:13px;
+        font-weight:700;
+        color:#6b7280;
+    }
+
+    .qty-input{
+        width:84px;
+        height:40px;
+        border:1px solid #d9d9d9;
+        border-radius:10px;
+        padding:0 10px;
+        outline:none;
+        font-size:14px;
+        background:#fff;
+    }
+
+    .btn{
+        height:40px;
+        border:none;
+        border-radius:10px;
+        padding:0 14px;
+        cursor:pointer;
+        font-size:13px;
+        font-weight:800;
+    }
+
+    .btn-update{
+        background:#edf5ff;
+        color:#2f80ed;
+    }
+
+    .btn-remove{
+        background:#fff1f0;
+        color:#d93025;
+    }
+
+    .remove-form{
+        margin:0;
+    }
+
+    .summary-title{
+        font-size:20px;
+        font-weight:800;
+        margin-bottom:14px;
+        color:#1f2937;
+    }
+
+    .summary-row{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:12px;
+        padding:10px 0;
+        border-bottom:1px dashed #ececec;
+        font-size:15px;
+    }
+
+    .summary-row:last-of-type{
+        border-bottom:none;
+    }
+
+    .summary-row.total{
+        font-size:26px;
+        font-weight:800;
+        color:#d70018;
+        padding-top:16px;
+        border-bottom:none;
+    }
+
+    .summary-value{
+        text-align:right;
+        font-weight:700;
+    }
+
+    .summary-note{
+        margin-top:14px;
+        font-size:13px;
+        color:#5f6368;
+        line-height:1.7;
+        background:#fafafa;
+        border-radius:12px;
+        padding:12px 14px;
+        border:1px solid #efefef;
+    }
+
+    .checkout-btn{
+        margin-top:16px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        height:48px;
+        width:100%;
+        border:none;
+        border-radius:12px;
+        background:#ff7a00;
+        color:#fff;
+        font-size:16px;
+        font-weight:800;
+        cursor:pointer;
+        box-shadow:0 4px 10px rgba(255,122,0,.24);
+    }
+
+    .secondary-row{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+        margin-top:10px;
+    }
+
+    .secondary-link,
+    .secondary-btn{
+        height:42px;
+        border-radius:10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:13px;
+        font-weight:800;
+        border:1px solid #ddd;
+        background:#fff;
+        color:#444;
+        cursor:pointer;
+    }
+
+    .empty-cart{
+        background:#fff;
+        border-radius:18px;
+        padding:42px 20px;
+        text-align:center;
+        box-shadow:0 2px 8px rgba(0,0,0,.06);
+        border:1px solid #ececec;
+    }
+
+    .empty-cart h2{
+        margin:0 0 10px;
+        font-size:26px;
+    }
+
+    .empty-cart p{
+        margin:0 0 20px;
+        color:#666;
+    }
+
+    .back-home{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:180px;
+        height:44px;
+        padding:0 20px;
+        background:#2f80ed;
+        color:#fff;
+        border-radius:12px;
+        font-weight:800;
+    }
+
+    @media (max-width: 992px){
+        .cart-layout{
+            grid-template-columns:1fr;
+        }
+
+        .summary-box{
+            position:static;
+            top:auto;
+        }
+    }
+
+    @media (max-width: 640px){
+        .cart-item{
+            grid-template-columns:1fr;
+        }
+
+        .cart-thumb{
+            width:100%;
+            max-width:140px;
+            height:140px;
+        }
+
+        .secondary-row{
+            grid-template-columns:1fr;
+        }
+
+        .qty-row{
+            align-items:flex-start;
+        }
+    }
+</style>
+
+<div class="cart-page">
+    <div class="cart-head">
+        <h1 class="page-title">Giỏ hàng của bạn</h1>
+    </div>
+
+    <div th:if="${successMessage}" class="flash-message flash-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="flash-message flash-error" th:text="${errorMessage}"></div>
+
+    <div th:if="${cartPricing.empty}" class="empty-cart">
+        <h2>Giỏ hàng đang trống</h2>
+        <p>Hãy chọn thêm sản phẩm để tiếp tục mua sắm.</p>
+        <a th:href="@{/}" class="back-home">Về trang chủ</a>
+    </div>
+
+    <div th:if="${!cartPricing.empty}" class="cart-layout">
+        <div class="cart-box">
+            <div class="cart-item" th:each="line : ${cartPricing.items}">
+                <div>
+                    <a th:href="@{/product/{slug}(slug=${line.product.slug})}" class="cart-thumb">
+                        <img th:src="${line.product.thumbnailUrl}" alt="">
+                    </a>
+                </div>
+
+                <div>
+                    <a th:href="@{/product/{slug}(slug=${line.product.slug})}">
+                        <div class="item-name" th:text="${line.product.name}"></div>
+                    </a>
+
+                    <div class="item-meta">
+                        <span class="price-main"
+                              th:text="${#numbers.formatDecimal(line.lineAmount,0,'COMMA',0,'POINT')} + '₫'"></span>
+
+                        <span class="price-note"
+                              th:if="${line.product.hasDiscount() and line.regularAppliedQuantity > 0}"
+                              th:text="${'Có ' + line.regularAppliedQuantity + ' sản phẩm tính giá gốc'}"></span>
+                    </div>
+
+                    <div class="promo-note"
+                         th:if="${line.promotionAppliedQuantity > 0 and line.regularAppliedQuantity == 0}"
+                         th:text="${'Áp dụng giá khuyến mãi cho toàn bộ ' + line.quantity + ' sản phẩm'}"></div>
+
+                    <div class="promo-note"
+                         th:if="${line.promotionAppliedQuantity > 0 and line.regularAppliedQuantity > 0}"
+                         th:text="${line.promotionAppliedQuantity + ' sản phẩm giá khuyến mãi, ' + line.regularAppliedQuantity + ' sản phẩm giá gốc'}"></div>
+
+                    <div class="qty-row">
+                        <form class="qty-form" th:action="@{/cart/update}" method="post">
+                            <input type="hidden" name="productId" th:value="${line.product.id}">
+                            <span class="qty-label">Số lượng</span>
+                            <input class="qty-input" type="number" name="quantity" min="1" th:value="${line.quantity}">
+                            <button type="submit" class="btn btn-update">Cập nhật</button>
+                        </form>
+
+                        <form class="remove-form" th:action="@{/cart/remove}" method="post">
+                            <input type="hidden" name="productId" th:value="${line.product.id}">
+                            <button type="submit" class="btn btn-remove">Xóa</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-title">Tạm tính đơn hàng</div>
+
+            <div class="summary-row">
+                <span>Tổng số lượng</span>
+                <span class="summary-value" th:text="${cartPricing.totalQuantity}"></span>
+            </div>
+
+            <div class="summary-row">
+                <span>Tạm tính</span>
+                <span class="summary-value"
+                      th:text="${#numbers.formatDecimal(cartPricing.subtotal,0,'COMMA',0,'POINT')} + '₫'"></span>
+            </div>
+
+            <div class="summary-row">
+                <span>Phí vận chuyển</span>
+                <span class="summary-value"
+                      th:text="${cartPricing.shippingFee.compareTo(T(java.math.BigDecimal).ZERO) == 0 ? 'Miễn phí' : #numbers.formatDecimal(cartPricing.shippingFee,0,'COMMA',0,'POINT') + '₫'}"></span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Tổng cộng</span>
+                <span th:text="${#numbers.formatDecimal(cartPricing.totalAmount,0,'COMMA',0,'POINT')} + '₫'"></span>
+            </div>
+
+            <div class="summary-note">
+                <div>Miễn phí ship khi:</div>
+                <div>- Tạm tính từ <strong>1.000.000đ</strong></div>
+                <div>- Và tổng số lượng từ <strong>2 sản phẩm</strong></div>
+                <div style="margin-top:8px;">
+                    Điểm thưởng dự kiến:
+                    <strong th:text="${cartPricing.loyaltyPointsEarned} + ' điểm'"></strong>
+                </div>
+            </div>
+
+            <a th:href="@{/checkout}" class="checkout-btn">TIẾN HÀNH ĐẶT HÀNG</a>
+
+            <div class="secondary-row">
+                <a th:href="@{/}" class="secondary-link">Tiếp tục mua</a>
+
+                <form th:action="@{/cart/clear}" method="post" style="margin:0;">
+                    <button type="submit" class="secondary-btn" style="width:100%;">Xóa giỏ hàng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+</body>
+</html>

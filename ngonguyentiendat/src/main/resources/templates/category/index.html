@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${category.name}">Danh mục</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#e5e5e5;color:#222}
+    .container{
+        width:1368px;
+        max-width:95%;
+        margin:22px auto 30px;
+    }
+    .category-head{
+        background:#fff;
+        border-radius:18px;
+        padding:20px 22px;
+        margin-bottom:18px;
+        box-shadow:0 2px 8px rgba(0,0,0,.05);
+    }
+    .title{
+        font-size:30px;
+        font-weight:800;
+        margin:0 0 8px;
+    }
+    .sub{
+        color:#666;
+        font-size:14px;
+    }
+    .product-grid{
+        display:grid;
+        grid-template-columns:repeat(5,1fr);
+        gap:12px;
+    }
+    .product-card{
+        background:#fff;
+        border-radius:12px;
+        overflow:hidden;
+        border:1px solid #ececec;
+        transition:.2s;
+    }
+    .product-card:hover{
+        transform:translateY(-2px);
+        box-shadow:0 6px 14px rgba(0,0,0,.08);
+    }
+    .product-card a{
+        text-decoration:none;
+        color:inherit;
+        display:block;
+    }
+    .img-wrap{
+        padding:14px 14px 6px;
+    }
+    .product-card img{
+        width:100%;
+        height:220px;
+        object-fit:contain;
+        display:block;
+    }
+    .product-body{
+        padding:0 14px 14px;
+    }
+    .product-name{
+        font-size:15px;
+        font-weight:700;
+        min-height:46px;
+        line-height:1.45;
+        margin-bottom:8px;
+    }
+    .product-price{
+        color:#d70018;
+        font-size:21px;
+        font-weight:800;
+        margin-bottom:8px;
+    }
+    .status-badge{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:5px 10px;
+        border-radius:999px;
+        font-size:11px;
+        font-weight:800;
+    }
+    .status-instock{
+        background:#e9f7ef;
+        color:#1e7e34;
+    }
+    .status-low{
+        background:#fff1e6;
+        color:#d97706;
+    }
+    .status-coming{
+        background:#f3e8ff;
+        color:#7c3aed;
+    }
+
+    @media (max-width:1200px){
+        .product-grid{grid-template-columns:repeat(4,1fr);}
+    }
+    @media (max-width:768px){
+        .product-grid{grid-template-columns:repeat(2,1fr);}
+        .title{font-size:24px;}
+        .product-card img{height:160px;}
+    }
+</style>
+
+<div class="container">
+    <div class="category-head">
+        <h1 class="title" th:text="${category.name}"></h1>
+        <div class="sub">Khám phá các sản phẩm thuộc danh mục này.</div>
+    </div>
+
+    <div class="product-grid">
+        <div class="product-card" th:each="product : ${products}">
+            <a th:href="@{/product/{slug}(slug=${product.slug})}">
+                <div class="img-wrap">
+                    <img th:src="${product.thumbnailUrl}" alt="">
+                </div>
+                <div class="product-body">
+                    <div class="product-name" th:text="${product.name}"></div>
+                    <div class="product-price"
+                         th:text="${#numbers.formatDecimal(product.price,0,'COMMA',0,'POINT')} + '₫'"></div>
+
+                    <span th:if="${product.stockStatus.name() == 'CON_HANG'}" class="status-badge status-instock">Còn hàng</span>
+                    <span th:if="${product.stockStatus.name() == 'SAP_HET_HANG'}" class="status-badge status-low">Sắp hết hàng</span>
+                    <span th:if="${product.stockStatus.name() == 'SAP_VE_HANG'}" class="status-badge status-coming">Sắp về hàng</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+</body>
+</html>

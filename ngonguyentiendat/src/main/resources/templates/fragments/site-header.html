@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="siteHeader(categories)">
+    <style>
+        * { box-sizing: border-box; }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        :root {
+            --tgdd-yellow: #ffd400;
+            --tgdd-container: 1200px;
+            --tgdd-header-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+            --tgdd-menu-shadow: 0 10px 28px rgba(0, 0, 0, .12);
+            --tgdd-arrow-left: 240px;
+        }
+
+        .tgdd-top-sale {
+            width: 100%;
+            background: #f8b400;
+            line-height: 0;
+        }
+
+        .tgdd-top-sale-inner {
+            width: min(var(--tgdd-container), calc(100vw - 16px));
+            margin: 0 auto;
+        }
+
+        .tgdd-top-sale img {
+            width: 100%;
+            height: 42px;
+            object-fit: cover;
+            display: block;
+
+        }
+
+        .tgdd-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--tgdd-yellow);
+            box-shadow: var(--tgdd-header-shadow);
+        }
+
+        .tgdd-container {
+            width: min(var(--tgdd-container), calc(100vw - 16px));
+            margin: 0 auto;
+        }
+
+        .tgdd-top {
+            display: grid;
+            grid-template-columns: 255px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 12px;
+            height: 68px;
+            padding: 8px 0 4px;
+        }
+
+        .tgdd-logo {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .tgdd-logo img {
+            width: 246px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .tgdd-search {
+            position: relative;
+            min-width: 0;
+        }
+
+        .tgdd-search::before {
+            content: "🔍";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+            opacity: .55;
+        }
+
+        .tgdd-search input {
+            width: 100%;
+            height: 44px;
+            border: none;
+            outline: none;
+            border-radius: 999px;
+            background: #fff;
+            padding: 0 18px 0 42px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .tgdd-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tgdd-action-link,
+        .tgdd-location {
+            height: 42px;
+            padding: 0 14px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: #111;
+        }
+
+        .tgdd-action-link:hover {
+            background: rgba(255, 255, 255, .24);
+        }
+
+        .tgdd-location {
+            min-width: 198px;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, .24);
+        }
+
+        .tgdd-nav-wrap {
+            position: relative;
+        }
+
+        .tgdd-nav {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            min-height: 42px;
+            padding-bottom: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scrollbar-width: none;
+        }
+
+        .tgdd-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tgdd-nav-item {
+            flex: 0 0 auto;
+        }
+
+        .tgdd-nav-link,
+        .tgdd-nav-button {
+            height: 36px;
+            padding: 0 5px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            color: #111;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .tgdd-nav-link:hover,
+        .tgdd-nav-button:hover,
+        .tgdd-nav-item.open > .tgdd-nav-button {
+            background: rgba(255, 255, 255, .25);
+        }
+
+        .tgdd-caret {
+            font-size: 10px;
+            transition: transform .18s ease;
+        }
+
+        .tgdd-nav-item.open .tgdd-caret {
+            transform: rotate(180deg);
+        }
+
+        .tgdd-mega-menu {
+            position: absolute;
+            left: 0;
+            top: calc(100% + 2px);
+            width: 100%;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: var(--tgdd-menu-shadow);
+            display: none;
+            z-index: 1200;
+            padding: 0;
+            overflow: visible;
+        }
+        .tgdd-mega-scroll {
+            max-height: min(560px, calc(100vh - 130px));
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 14px 14px 18px;
+            border-radius: 18px;
+        }
+
+        .tgdd-nav-wrap.open .tgdd-mega-menu {
+            display: block;
+        }
+
+        .tgdd-mega-menu::before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: var(--tgdd-arrow-left);
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            transform: rotate(45deg);
+            border-radius: 2px;
+            z-index: 5;
+        }
+
+        .tgdd-mega-grid {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 40px;
+            row-gap: 10px;
+            align-items: start;
+        }
+
+        .tgdd-mega-group {
+            min-width: 0;
+        }
+
+        .tgdd-mega-group-title {
+            margin: 12px 0 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .tgdd-mega-items {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 14px 8px;
+        }
+
+        .tgdd-mega-item {
+            min-width: 0;
+            min-height: 104px;
+            padding: 2px 4px 4px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            transition: background .15s ease;
+        }
+
+        .tgdd-mega-item:hover {
+            background: #f7f7f7;
+        }
+
+        .tgdd-mega-thumb {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #fff;
+            border-radius: 14px;
+        }
+
+        .tgdd-mega-thumb img {
+            width: 54px;
+            height: 54px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .tgdd-mega-placeholder {
+            font-size: 22px;
+            color: #777;
+        }
+
+        .tgdd-mega-label {
+            font-size: 12px;
+            line-height: 1.35;
+            color: #333;
+            min-height: 32px;
+            max-width: 100%;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+        }
+
+        @media (max-width: 1240px) {
+            :root {
+                --tgdd-container: 1160px;
+            }
+
+            .tgdd-top {
+                grid-template-columns: 220px minmax(0, 1fr) auto;
+            }
+
+            .tgdd-logo img {
+                width: 210px;
+            }
+
+            .tgdd-location {
+                min-width: 180px;
+            }
+
+            .tgdd-mega-items {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .tgdd-top {
+                grid-template-columns: 1fr;
+                height: auto;
+                gap: 10px;
+                padding: 10px 0 6px;
+            }
+
+            .tgdd-logo {
+                justify-content: center;
+            }
+
+            .tgdd-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .tgdd-mega-menu {
+                position: fixed;
+                left: 8px;
+                right: 8px;
+                top: 130px;
+                width: auto;
+                max-height: calc(100vh - 145px);
+            }
+
+            .tgdd-mega-menu::before {
+                display: none;
+            }
+
+            .tgdd-mega-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tgdd-mega-items {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .tgdd-top-sale img {
+                height: 38px;
+            }
+
+            .tgdd-logo img {
+                width: 180px;
+            }
+
+            .tgdd-search input,
+            .tgdd-action-link,
+            .tgdd-location {
+                height: 40px;
+            }
+
+            .tgdd-nav-link,
+            .tgdd-nav-button {
+                height: 34px;
+                font-size: 14px;
+                padding: 0 9px;
+            }
+
+            .tgdd-mega-items {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .tgdd-mega-thumb {
+                width: 52px;
+                height: 52px;
+            }
+
+            .tgdd-mega-thumb img {
+                width: 46px;
+                height: 46px;
+            }
+        }
+        .tgdd-cart-link{
+            position:relative;
+        }
+
+        .tgdd-cart-icon-wrap{
+            position:relative;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .tgdd-cart-badge{
+            position:absolute;
+            top:-8px;
+            right:-10px;
+            min-width:18px;
+            height:18px;
+            padding:0 5px;
+            border-radius:999px;
+            background:#e30019;
+            color:#fff;
+            font-size:10px;
+            font-weight:800;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            line-height:1;
+        }
+        .tgdd-account {
+            position: relative;
+        }
+
+        .tgdd-account-trigger {
+            height: 42px;
+            padding: 0 14px;
+            border: none;
+            background: transparent;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: #111;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tgdd-account-trigger:hover {
+            background: rgba(255, 255, 255, .24);
+        }
+
+        .tgdd-account-dropdown {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            min-width: 190px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+            padding: 8px 0;
+            display: none;
+            z-index: 2000;
+        }
+
+        .tgdd-account.open .tgdd-account-dropdown {
+            display: block;
+        }
+
+        .tgdd-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #111;
+            text-decoration: none;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .tgdd-dropdown-item:hover {
+            background: #f5f5f5;
+        }
+
+        .tgdd-dropdown-form {
+            margin: 0;
+        }
+
+        .tgdd-logout-btn {
+            color: #e30019;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="tgdd-top-sale">
+        <div class="tgdd-top-sale-inner">
+            <img th:src="@{/images/top-sale-banner.png}" alt="Top sale banner">
+        </div>
+    </div>
+
+    <header class="tgdd-header">
+        <div class="tgdd-container">
+            <div class="tgdd-top">
+                <a th:href="@{/}" class="tgdd-logo">
+                    <img th:src="@{/images/logo-tgdd.png}" alt="Thegioididong logo">
+                </a>
+
+                <div class="tgdd-search">
+                    <input type="text" placeholder="Bạn tìm gì...">
+                </div>
+
+                <div class="tgdd-actions">
+                    <a th:if="${!isAuthenticatedUser}" th:href="@{/auth/login}" class="tgdd-action-link">
+                        <span>👤</span>
+                        <span>Đăng nhập</span>
+                    </a>
+
+                    <div class="tgdd-account" th:if="${isAuthenticatedUser}">
+                        <button type="button" class="tgdd-account-trigger">
+                            <span>👤</span>
+                            <span th:text="${currentUserAccount != null ? currentUserAccount.fullName : 'Tài khoản'}"></span>
+                            <span class="tgdd-caret">▼</span>
+                        </button>
+
+                        <div class="tgdd-account-dropdown">
+                            <a th:href="${isAdmin ? '/admin' : (isManager ? '/products' : '/loyalty')}"
+                               class="tgdd-dropdown-item">
+                                Trang của tôi
+                            </a>
+
+                            <form th:action="@{/auth/logout}" method="post" class="tgdd-dropdown-form">
+                                <button type="submit" class="tgdd-dropdown-item tgdd-logout-btn">
+                                    Đăng xuất
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <a th:href="@{/cart}" class="tgdd-action-link tgdd-cart-link">
+                        <span class="tgdd-cart-icon-wrap">
+                            <span>🛒</span>
+                            <span class="tgdd-cart-badge"
+                                  th:if="${cartTotalQuantity != null and cartTotalQuantity > 0}"
+                                  th:text="${cartTotalQuantity > 99 ? '99+' : cartTotalQuantity}"></span>
+                        </span>
+                        <span>Giỏ hàng</span>
+                    </a>
+
+                    <a th:if="${isUserRole}" th:href="@{/loyalty}" class="tgdd-action-link">
+                        <span>🎁</span>
+                        <span th:text="${currentUserAccount != null ? ('Điểm ' + currentUserAccount.loyaltyPoints) : 'Đổi điểm'}"></span>
+                    </a>
+
+
+
+                    <div class="tgdd-location">
+                        <span>📍 Hồ Chí Minh</span>
+                        <span>›</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tgdd-nav-wrap" id="tgddAccessoryRoot">
+                <nav class="tgdd-nav">
+                    <div class="tgdd-nav-item">
+                        <a th:href="@{/category/dien-thoai}" class="tgdd-nav-link">📱 <span>Điện thoại</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a th:href="@{/category/laptop}" class="tgdd-nav-link">💻 <span>Laptop</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item" id="accessoryMenuToggle">
+                        <button type="button" class="tgdd-nav-button" aria-expanded="false" id="tgddAccessoryButton">
+                            🎧 <span>Phụ kiện</span> <span class="tgdd-caret">▲</span>
+                        </button>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">⌚ <span>Smartwatch</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">🕘 <span>Đồng hồ</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">📲 <span>Tablet</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">♻️ <span>Máy cũ, Thu cũ</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">🖥️ <span>Màn hình, Máy in</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">💳 <span>Sim, Thẻ cào</span></a>
+                    </div>
+
+                    <div class="tgdd-nav-item">
+                        <a href="#" class="tgdd-nav-link">⚙️ <span>Dịch vụ tiện ích</span></a>
+                    </div>
+                </nav>
+
+                <div class="tgdd-mega-menu"
+                     th:if="${accessoryCategoriesByGroup != null and !accessoryCategoriesByGroup.isEmpty()}">
+                    <div class="tgdd-mega-scroll">
+                        <div class="tgdd-mega-grid">
+                            <section class="tgdd-mega-group"
+                                     th:each="groupEntry : ${accessoryCategoriesByGroup.entrySet()}">
+                                <h3 class="tgdd-mega-group-title"
+                                    th:text="${menuGroupOptions[groupEntry.key]}"></h3>
+
+                                <div class="tgdd-mega-items">
+                                    <a th:each="categoryItem : ${groupEntry.value}"
+                                       th:href="@{/category/{slug}(slug=${categoryItem.slug})}"
+                                       class="tgdd-mega-item">
+                        <span class="tgdd-mega-thumb">
+                            <img th:if="${categoryItem.imageUrl != null and !#strings.isEmpty(categoryItem.imageUrl)}"
+                                 th:src="${categoryItem.imageUrl}"
+                                 th:alt="${categoryItem.name}">
+                            <span th:if="${categoryItem.imageUrl == null or #strings.isEmpty(categoryItem.imageUrl)}"
+                                  class="tgdd-mega-placeholder">📦</span>
+                        </span>
+                                        <span class="tgdd-mega-label" th:text="${categoryItem.name}"></span>
+                                    </a>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <script>
+        (function () {
+            const root = document.getElementById('tgddAccessoryRoot');
+            const menuItem = document.getElementById('accessoryMenuToggle');
+            const button = document.getElementById('tgddAccessoryButton');
+
+            if (!root || !menuItem || !button) return;
+
+            function updateArrowPosition() {
+                const rootRect = root.getBoundingClientRect();
+                const buttonRect = button.getBoundingClientRect();
+                const arrowLeft = buttonRect.left - rootRect.left + (buttonRect.width / 2) - 9;
+                root.style.setProperty('--tgdd-arrow-left', arrowLeft + 'px');
+            }
+
+            function openMenu() {
+                root.classList.add('open');
+                menuItem.classList.add('open');
+                button.setAttribute('aria-expanded', 'true');
+                updateArrowPosition();
+            }
+
+            function closeMenu() {
+                root.classList.remove('open');
+                menuItem.classList.remove('open');
+                button.setAttribute('aria-expanded', 'false');
+            }
+
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (root.classList.contains('open')) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            });
+
+            menuItem.addEventListener('mouseenter', openMenu);
+            root.addEventListener('mouseleave', closeMenu);
+
+            document.addEventListener('click', function (event) {
+                if (!root.contains(event.target)) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                if (root.classList.contains('open')) {
+                    updateArrowPosition();
+                }
+            });
+            const account = document.querySelector('.tgdd-account');
+            if (!account) return;
+
+            const trigger = account.querySelector('.tgdd-account-trigger');
+
+            trigger.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                account.classList.toggle('open');
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!account.contains(event.target)) {
+                    account.classList.remove('open');
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    account.classList.remove('open');
+                }
+            });
+        })();
+    </script>
+</div>
+</body>
+</html>

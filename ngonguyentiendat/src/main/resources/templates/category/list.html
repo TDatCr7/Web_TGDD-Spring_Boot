@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách danh mục</title>
+</head>
+<body>
+
+<div th:replace="fragments/site-header :: siteHeader(${categories})"></div>
+
+<style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#e5e5e5;color:#222}
+    .admin-shell{width:1180px;max-width:95%;margin:24px auto 32px}
+    .admin-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .admin-title{background:#ffd400;padding:18px 24px;font-size:24px;font-weight:800}
+    .admin-body{padding:24px}
+    .message-success{margin-bottom:16px;padding:12px 14px;border-radius:10px;background:#d4edda;color:#155724;font-weight:700}
+    .message-error{margin-bottom:16px;padding:12px 14px;border-radius:10px;background:#f8d7da;color:#721c24;font-weight:700}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+    .btn{
+        display:inline-flex;align-items:center;justify-content:center;
+        height:42px;padding:0 16px;border-radius:8px;
+        font-weight:800;text-decoration:none
+    }
+    .btn-add{background:#ffd400;color:#111}
+    .btn-back{background:#111;color:#fff}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px 14px;border-bottom:1px solid #ececec;text-align:left;vertical-align:middle}
+    th{background:#fff7bf;font-weight:800}
+    .cat-img{width:54px;height:54px;border-radius:8px;object-fit:cover;border:1px solid #ddd}
+    .actions{display:flex;gap:8px}
+    .btn-edit,.btn-delete{
+        display:inline-flex;align-items:center;justify-content:center;
+        min-width:74px;height:34px;padding:0 10px;border-radius:8px;
+        font-size:13px;font-weight:800;text-decoration:none
+    }
+    .btn-edit{background:#e9f7ef;color:#1e7e34;border:1px solid #bfe5c8}
+    .btn-delete{background:#fdecec;color:#dc3545;border:1px solid #f5c2c7}
+
+    .import-box{margin:0 0 22px;padding:18px;border:1px solid #ececec;border-radius:14px;background:#fffdf2}
+    .import-title{font-size:18px;font-weight:800;margin:0 0 12px}
+    .import-grid{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end}
+    .import-grid input,.import-grid select{width:100%;height:42px;padding:10px 12px;border:1px solid #d8d8d8;border-radius:8px}
+    .btn-import{background:#0b66c3;color:#fff;border:none;cursor:pointer}
+    .import-note{margin-top:8px;color:#666;font-size:13px}
+    .import-result{margin-top:16px;border:1px solid #ececec;border-radius:12px;overflow:hidden}
+    .status-ok{color:#1e7e34;font-weight:800}.status-skip{color:#d97706;font-weight:800}
+
+</style>
+
+<div class="admin-shell">
+    <div class="admin-card">
+        <div class="admin-title">Danh sách Danh mục</div>
+
+        <div class="admin-body">
+            <div th:if="${successMessage}" class="message-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="message-error" th:text="${errorMessage}"></div>
+
+            <div class="toolbar">
+                <a class="btn btn-add" th:href="@{/categories/add}">Thêm Danh mục</a>
+                <a class="btn btn-back" th:href="@{/admin}">Về admin</a>
+            </div>
+
+            
+            <div class="import-box">
+                <div class="import-title">Cào danh mục từ website ngoài</div>
+                <form th:action="@{/categories/import-from-url}" method="post">
+                    <div class="import-grid">
+                        <div>
+                            <label for="categorySourceUrl">Link nguồn</label>
+                            <input id="categorySourceUrl" type="text" name="sourceUrl" placeholder="Ví dụ: https://www.thegioididong.com" required>
+                        </div>
+                        <div></div>
+                        <button class="btn btn-import" type="submit">Cào danh mục</button>
+                    </div>
+                    <div class="import-note">Tự đọc các danh mục phổ biến như điện thoại, laptop, tai nghe, đồng hồ, sạc, chuột, bàn phím...</div>
+                </form>
+
+                <div class="import-result" th:if="${categoryImportResults}">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Tên</th>
+                            <th>Slug</th>
+                            <th>Ảnh</th>
+                            <th>Nguồn</th>
+                            <th>Kết quả</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${categoryImportResults}">
+                            <td th:text="${item.name}"></td>
+                            <td th:text="${item.slug}"></td>
+                            <td><img th:if="${item.imageUrl != null and !#strings.isEmpty(item.imageUrl)}" th:src="${item.imageUrl}" class="cat-img" alt=""></td>
+                            <td><a th:href="${item.sourceUrl}" target="_blank" th:text="${item.sourceUrl}"></a></td>
+                            <td><span th:text="${item.message}" th:classappend="${item.imported} ? 'status-ok' : 'status-skip'"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Nhóm</th>
+                        <th>Hình ảnh</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="category : ${categories}">
+                        <td th:text="${category.id}"></td>
+                        <td th:text="${category.name}"></td>
+                        <td th:text="${category.menuGroup != null and !#strings.isEmpty(category.menuGroup) ? menuGroupOptions[category.menuGroup] : ''}"></td>
+                        <td>
+                            <img th:if="${category.imageUrl != null}" th:src="${category.imageUrl}" class="cat-img" alt="">
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a class="btn-edit" th:href="@{/categories/edit/{id}(id=${category.id})}">Edit</a>
+                                <a class="btn-delete"
+                                   th:href="@{/categories/delete/{id}(id=${category.id})}"
+                                   onclick="return confirm('Bạn có chắc muốn xóa?')">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+
+</body>
+</html>
